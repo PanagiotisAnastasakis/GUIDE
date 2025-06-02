@@ -1,4 +1,4 @@
-source("/Users/panos/Desktop/MSc Thesis/Code/helper.R")
+#source("/Users/panos/Desktop/MSc Thesis/Code/helper.R")
 library(ggplot2)
 library(cowplot)
 library(pheatmap)
@@ -14,8 +14,10 @@ library(ggbeeswarm)
 
 set.seed(6941125)
 
-df = as.matrix(read.csv("/Users/panos/Desktop/MSc Thesis/Data/t2d_data_large.csv", header = T, row.names = 1))
+#df = as.matrix(read.csv("/Users/panos/Desktop/MSc Thesis/Data/t2d_data_large.csv", header = T, row.names = 1))
 
+## The data analyzed here comes from the paper "Multiancestry polygenic mechanisms of type 2 diabetes", 
+## by K. Smith et al.
 
 K = 12 ## Number of clusters used in the bNMF analysis of this data
 
@@ -40,13 +42,14 @@ W.lt.degas_signif[W.lt.degas_signif^2 < 1/ncol(df)] = 0
 
 ica_nruns = 100
 
-ica_clustering = get_ica_clustering(W = df, K = K, reps = ica_nruns)
+guide_icasso_t2d = guide_icasso(W = df, K = K, reps = ica_nruns)
 
-unmix_matrix_guide = get_optimal_unmixing_matrix(ica_clustering$unmix.total, ica_clustering$clusters, ica_clustering$cors.unmix)
+#unmix_matrix_guide = get_optimal_unmixing_matrix(ica_clustering$unmix.total, ica_clustering$clusters, ica_clustering$cors.unmix)
+unmix_matrix_guide = guide_icasso_t2d$optimal.unmixing.matrix
 
 guide.list = get_guide(df, K = K, unmixing.matrix = unmix_matrix_guide)
 
-cqi_values = get_cqi_values(ica_clustering$cors.unmix, ica_clustering$clusters)
+cqi_values = get_cqi_values(guide_icasso_t2d$cors.unmix, guide_icasso_t2d$clusters)
 
 cluster_ordering = order(cqi_values, decreasing = TRUE)
 
@@ -126,12 +129,12 @@ data %>%
 
 ## dendrogram
 
-cut_height = sort(ica_clustering$hc$height, decreasing = TRUE)[K-1] 
+cut_height = sort(guide_icasso_t2d$hc$height, decreasing = TRUE)[K-1] 
 
 par(mar = c(1, 7, 4, 0), mgp = c(4.5, 1, 0))  # bottom, left, top, right
 
 ## save at 16x11
-plot(ica_clustering$hc,
+plot(guide_icasso_t2d$hc,
      hang = 0.01,     # Optional: hang labels at the bottom
      labels = F,
      main = "Dendrogram of ICASSO Clustering",
@@ -187,8 +190,8 @@ unmixing.matrices = list()
 
 for (ii in 1:n_runs) {
 
-  ica_clustering = get_ica_clustering(W = df, K = K, reps = 100)
-  unmix_matrix_guide = get_optimal_unmixing_matrix(ica_clustering$unmix.total, ica_clustering$clusters, ica_clustering$cors.unmix)
+  ica_clustering = guide_icasso(W = df, K = K, reps = 100)
+  unmix_matrix_guide = ica_clustering$optimal.unmixing.matrix
   unmixing.matrices[[ii]] = unmix_matrix_guide
   print(ii)
 }
@@ -389,11 +392,6 @@ colnames(jaccard_degas_xl) = paste0("DeGAs_", 1:K)
 rownames(jaccard_degas_lt) = paste0("DeGAs_", 1:K)
 colnames(jaccard_degas_lt) = paste0("DeGAs_", 1:K)
 
-
-a = c(0,0)
-b = c(0,0)
-
-0 + sum(pmin(a, b)) / sum(pmax(a, b))
 
 
 p_guide_degas_xl <- pheatmap(jaccard_guide_degas_xl,
@@ -807,9 +805,6 @@ grid.draw(
 
 
 
-###### Dataset 2
-
-
 k.guide.total = c()
 k.degas.total = c()
 
@@ -845,7 +840,6 @@ kurt.df <- data.frame(
   Method = factor(rep(c("GUIDE", "DeGAs"), c(length(k.guide.total), length(k.degas.total))),
                   levels = c("GUIDE", "DeGAs")),
   Value = c(k.guide.total, k.degas.total)
-  #Value = c(k.guide.total, k.degas.total)
 )
 
 # Plot
@@ -960,110 +954,26 @@ icasso_ica_total
 ## 3) Barplots of top 5 variants and top 5 phenotypes for GUIDE and DeGAs
 
 
-## save at 10x9
 
-stacked_barplot(W.xl.guide^2, n = 10,
-                main = "Contributions of Top 10 Variants on GUIDE Clusters",
-                ylab = "Variant Contribution Scores",
-                xlab = "GUIDE_")
-
-stacked_barplot(W.lt.guide^2, n = 5,
-                main = "Contributions of Top 5 Traits on GUIDE Clusters",
-                ylab = "Trait Contribution Scores",
-                xlab = "GUIDE_")
-
-stacked_barplot(W.xl.degas^2, n = 10,
-                main = "Contributions of Top 10 Variants on DeGAs Clusters",
-                ylab = "Variant Contribution Scores",
-                xlab = "DeGAs_")
-
-stacked_barplot(W.lt.degas^2, n = 5,
-                main = "Contributions of Top 10 Traits on DeGAs Clusters",
-                ylab = "Trait Contribution Scores",
-                xlab = "DeGAs_")
-
-
-
-
-
-
-
-
-
-
-##### Not used
-
-
-
-
-
-
-
-
-
-
-
-
-#### Analyzing the small T2D dataset
-
-t2d_small = as.matrix(read.csv("/Users/panos/Desktop/MSc Thesis/Data/t2d_data_small.csv", header = T, row.names = 1))
-
-
-k = 4
-
-tsvd.list = get_tsvd(scale(t2d_small), K = k) 
-
-W.xl.tsvd = tsvd.list$U
-W.lt.tsvd = tsvd.list$V
-
-
-
-guide.list = get_guide(t2d_small, K = k, alg.typ = "deflation", tol = 1e-06, verbose=F) 
-
-W.xl.guide = guide.list$W.xl
-W.lt.guide = guide.list$W.lt
-
-
-
-NN_t2d_small = NN_transformation(t2d_small)
-
-bnmf_reps = run_bNMF(z_mat = NN_t2d_small, n_reps = 1000, K=8, K0=8)
-run_summary = make_run_summary(bnmf_reps)
-opt.K = names(run_summary$unique.K)[which.max(run_summary$unique.K)]
-res = bnmf_reps[[run_summary$MAP.K.run[as.character(k)]]]
-
-W = res$W[,colSums(res$W) != 0] 
-H = res$H[rowSums(res$H) != 0,]
-W[W < 1.e-10] = 0
-H[H < 1.e-10] = 0
-
-W.xl.bnmf = W %*% diag(1/sqrt(colSums(W^2)))
-W.lt.bnmf = (t(H)) %*% diag(1/sqrt(colSums((t(H))^2)))
-
-
-
-
-
-
-
-
-
-
-paran(t2d_small, iterations=5000, graph = F)
-
-
-
-
-A = matrix(c(1.3,2.7,3,1.1), nrow = 2)
-B = matrix(c(1,2,3,4), nrow=2)
-C = matrix(c(5,6,7,8), nrow = 2)
-
-
-
-
-
-
-
+# stacked_barplot(W.xl.guide^2, n = 10,
+#                 main = "Contributions of Top 10 Variants on GUIDE Clusters",
+#                 ylab = "Variant Contribution Scores",
+#                 xlab = "GUIDE_")
+# 
+# stacked_barplot(W.lt.guide^2, n = 5,
+#                 main = "Contributions of Top 5 Traits on GUIDE Clusters",
+#                 ylab = "Trait Contribution Scores",
+#                 xlab = "GUIDE_")
+# 
+# stacked_barplot(W.xl.degas^2, n = 10,
+#                 main = "Contributions of Top 10 Variants on DeGAs Clusters",
+#                 ylab = "Variant Contribution Scores",
+#                 xlab = "DeGAs_")
+# 
+# stacked_barplot(W.lt.degas^2, n = 5,
+#                 main = "Contributions of Top 10 Traits on DeGAs Clusters",
+#                 ylab = "Trait Contribution Scores",
+#                 xlab = "DeGAs_")
 
 
 

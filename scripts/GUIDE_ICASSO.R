@@ -19,9 +19,9 @@ get.unmixing.matrices <- function(B, K, n.matrices = 10,
   
   tsvd.list = svd(B) #get_tsvd(B, K = starting.K)
   
-  U = tsvd.list$u[,1:starting.K]
-  d = tsvd.list$d[1:starting.K]
-  V = tsvd.list$v[,1:starting.K]
+  U = tsvd.list$u[,1:K]
+  d = tsvd.list$d[1:K]
+  V = tsvd.list$v[,1:K]
   
   G = cbind(t(U), t(V)) ## The components are in rows
   
@@ -117,7 +117,7 @@ get.nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
 }
 
 
-## Function to..
+## Function for the novel extension of GUIDE with ICASSO...
 
 guide_icasso <- function(W, K, reps = 20) {
   
@@ -148,8 +148,6 @@ guide_icasso <- function(W, K, reps = 20) {
               cors.unmix = cors.unmix,
               optimal.unmixing.matrix = optimal.unmixing.matrix))
 }
-
-
 
 
 
@@ -187,9 +185,9 @@ get_guide <- function(B, K=10, unmixing.matrix = NA, alg.typ = "parallel", tol =
   
   tsvd.list = svd(B) #get_tsvd(B, K = starting.K)
   
-  U = tsvd.list$u[,1:starting.K]
-  d = tsvd.list$d[1:starting.K]
-  V = tsvd.list$v[,1:starting.K]
+  U = tsvd.list$u[,1:K]
+  d = tsvd.list$d[1:K]
+  V = tsvd.list$v[,1:K]
   
   G = cbind(t(U), t(V)) ## The components are in rows
   
