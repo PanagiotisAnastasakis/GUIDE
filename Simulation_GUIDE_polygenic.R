@@ -12,40 +12,6 @@ library(cowplot)
 
 
 
-get_ica_clustering <- function(W, K, reps = 20) {
-  
-  unmixing.matrices = get.unmixing.matrices(W, K = K, validation.reps = reps, alg.typ = "parallel", verbose = F) ## each component corresponds to a column in the unmixing matrix
-  
-  unmix.total = do.call(cbind, unmixing.matrices)
-  
-  cors.unmix = abs(cor(unmix.total))
-  
-  dist.unmix = 1 - cors.unmix
-  
-  hc = hclust(as.dist(dist.unmix), method = "average")
-  
-  clusters = cutree(hc, k = K)
-  
-  return(list(hc = hc, clusters = clusters, cors.unmix = cors.unmix, unmix.total = unmix.total))
-}
-
-
-get_optimal_unmixing_matrix <- function(unmix.total, clusters, cors.unmix) {
-  
-  K = length(unique(clusters))
-  final.unmixing.matrix = matrix(0, K, K)
-  
-  for (ii in 1:K) {
-    cluster_points = which(clusters == ii)  
-    sub_cors = cors.unmix[cluster_points, cluster_points]  
-    if (length(cluster_points) == 1) medoid_index = cluster_points
-    else medoid_index = cluster_points[which.max(rowSums(sub_cors))]  
-    final.unmixing.matrix[,ii] = unmix.total[,medoid_index]
-  }
-  return(final.unmixing.matrix)
-}
-
-
 
 ### Simulation 1
 
@@ -108,8 +74,8 @@ for (i in 1:length(results)) {
         
         ## GUIDE
         
-        ica_clustering = get_ica_clustering(W = W, K = k, reps = 20)
-        a = get_optimal_unmixing_matrix(ica_clustering$unmix.total, ica_clustering$clusters, ica_clustering$cors.unmix)
+        ica_clustering = guide_icasso(W = W, K = k, reps = 20)
+        a = ica_clustering$optimal.unmixing.matrix
         guide.list = get_guide(W, K = k, unmixing.matrix = a, verbose = F)
         
         W.xl.guide = guide.list$W.xl
@@ -249,11 +215,10 @@ for (sampler in names(results_misspec)) {
         weights.true = rbind(W.xl, W.lt)
         
         ## GUIDE
-        ica_clustering = get_ica_clustering(W = W, K = k.est, reps = 20)
-        a = get_optimal_unmixing_matrix(ica_clustering$unmix.total, ica_clustering$clusters, ica_clustering$cors.unmix)
+        ica_clustering = guide_icasso(W = W, K = k.est, reps = 20)
+        a =ica_clustering$optimal.unmixing.matrix
         guide.list = get_guide(W, K = k.est, unmixing.matrix = a, verbose = F)
         
-        #guide.list = get_guide(W, K = k.est, verbose=F)
         W.xl.guide = guide.list$W.xl
         W.lt.guide = guide.list$W.lt
         weights.guide = rbind(W.xl.guide, W.lt.guide)
@@ -403,11 +368,10 @@ for (sampler in names(results_misspec_recovery_guide)) {
       
       weights.true = rbind(W.xl, W.lt)
       
-      ica_clustering = get_ica_clustering(W = W, K = k.est, reps = 20)
-      a = get_optimal_unmixing_matrix(ica_clustering$unmix.total, ica_clustering$clusters, ica_clustering$cors.unmix)
+      ica_clustering = guide_icasso(W = W, K = k.est, reps = 20)
+      a = ica_clustering$optimal.unmixing.matrix
       guide.list = get_guide(W, K = k.est, unmixing.matrix = a, verbose = F)
       
-      #guide.list = get_guide(W, K = k.est, verbose=F)
       W.xl.guide = guide.list$W.xl
       W.lt.guide = guide.list$W.lt
       weights.guide = rbind(W.xl.guide, W.lt.guide)
