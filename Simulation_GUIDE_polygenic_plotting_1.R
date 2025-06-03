@@ -111,92 +111,92 @@ data.c2.gaussian.kurt <- data.frame(
 
 ## C3
 
-data.c3.gaussian.xl <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C3"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
-    results[["C3"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
-    results[["C3"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
-    results[["C3"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
-    results[["C3"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
-    results[["C3"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
-  )
-)
-
-
-data.c3.gaussian.lt <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C3"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
-    results[["C3"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
-    results[["C3"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
-    results[["C3"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
-    results[["C3"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
-    results[["C3"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
-  )
-)
-
-
-data.c3.gaussian.kurt <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C3"]][["gaussian"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
-    results[["C3"]][["gaussian"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
-    results[["C3"]][["gaussian"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
-    results[["C3"]][["gaussian"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
-    results[["C3"]][["gaussian"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
-    results[["C3"]][["gaussian"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
-  )
-)
-
-
-
-
-## C4
-
-data.c4.gaussian.xl <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C4"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
-    results[["C4"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
-    results[["C4"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
-    results[["C4"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
-    results[["C4"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
-    results[["C4"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
-  )
-)
-
-
-data.c4.gaussian.lt <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C4"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
-    results[["C4"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
-    results[["C4"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
-    results[["C4"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
-    results[["C4"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
-    results[["C4"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
-  )
-)
-
-
-data.c4.gaussian.kurt <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C4"]][["gaussian"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
-    results[["C4"]][["gaussian"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
-    results[["C4"]][["gaussian"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
-    results[["C4"]][["gaussian"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
-    results[["C4"]][["gaussian"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
-    results[["C4"]][["gaussian"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
-  )
-)
+# data.c3.gaussian.xl <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C3"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
+#     results[["C3"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
+#     results[["C3"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
+#     results[["C3"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
+#     results[["C3"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
+#     results[["C3"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
+#   )
+# )
+# 
+# 
+# data.c3.gaussian.lt <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C3"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
+#     results[["C3"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
+#     results[["C3"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
+#     results[["C3"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
+#     results[["C3"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
+#     results[["C3"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
+#   )
+# )
+# 
+# 
+# data.c3.gaussian.kurt <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C3"]][["gaussian"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
+#     results[["C3"]][["gaussian"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
+#     results[["C3"]][["gaussian"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
+#     results[["C3"]][["gaussian"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
+#     results[["C3"]][["gaussian"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
+#     results[["C3"]][["gaussian"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
+#   )
+# )
+# 
+# 
+# 
+# 
+# ## C4
+# 
+# data.c4.gaussian.xl <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C4"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
+#     results[["C4"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
+#     results[["C4"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
+#     results[["C4"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
+#     results[["C4"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
+#     results[["C4"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
+#   )
+# )
+# 
+# 
+# data.c4.gaussian.lt <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C4"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
+#     results[["C4"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
+#     results[["C4"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
+#     results[["C4"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
+#     results[["C4"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
+#     results[["C4"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
+#   )
+# )
+# 
+# 
+# data.c4.gaussian.kurt <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C4"]][["gaussian"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
+#     results[["C4"]][["gaussian"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
+#     results[["C4"]][["gaussian"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
+#     results[["C4"]][["gaussian"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
+#     results[["C4"]][["gaussian"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
+#     results[["C4"]][["gaussian"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
+#   )
+# )
 
 
 
@@ -297,92 +297,92 @@ data.c2.laplace.kurt <- data.frame(
 
 ## C3
 
-data.c3.laplace.xl <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C3"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
-    results[["C3"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
-    results[["C3"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
-    results[["C3"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
-    results[["C3"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
-    results[["C3"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
-  )
-)
-
-
-data.c3.laplace.lt <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C3"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
-    results[["C3"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
-    results[["C3"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
-    results[["C3"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
-    results[["C3"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
-    results[["C3"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
-  )
-)
-
-
-data.c3.laplace.kurt <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C3"]][["laplace"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
-    results[["C3"]][["laplace"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
-    results[["C3"]][["laplace"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
-    results[["C3"]][["laplace"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
-    results[["C3"]][["laplace"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
-    results[["C3"]][["laplace"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
-  )
-)
-
-
-
-
-## C4
-
-data.c4.laplace.xl <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C4"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
-    results[["C4"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
-    results[["C4"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
-    results[["C4"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
-    results[["C4"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
-    results[["C4"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
-  )
-)
-
-
-data.c4.laplace.lt <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C4"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
-    results[["C4"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
-    results[["C4"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
-    results[["C4"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
-    results[["C4"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
-    results[["C4"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
-  )
-)
-
-
-data.c4.laplace.kurt <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
-  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
-  Value = c(
-    results[["C4"]][["laplace"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
-    results[["C4"]][["laplace"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
-    results[["C4"]][["laplace"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
-    results[["C4"]][["laplace"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
-    results[["C4"]][["laplace"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
-    results[["C4"]][["laplace"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
-  )
-)
+# data.c3.laplace.xl <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C3"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
+#     results[["C3"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
+#     results[["C3"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
+#     results[["C3"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
+#     results[["C3"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
+#     results[["C3"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
+#   )
+# )
+# 
+# 
+# data.c3.laplace.lt <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C3"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
+#     results[["C3"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
+#     results[["C3"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
+#     results[["C3"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
+#     results[["C3"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
+#     results[["C3"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
+#   )
+# )
+# 
+# 
+# data.c3.laplace.kurt <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C3"]][["laplace"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
+#     results[["C3"]][["laplace"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
+#     results[["C3"]][["laplace"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
+#     results[["C3"]][["laplace"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
+#     results[["C3"]][["laplace"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
+#     results[["C3"]][["laplace"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
+#   )
+# )
+# 
+# 
+# 
+# 
+# ## C4
+# 
+# data.c4.laplace.xl <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C4"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
+#     results[["C4"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
+#     results[["C4"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
+#     results[["C4"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
+#     results[["C4"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
+#     results[["C4"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
+#   )
+# )
+# 
+# 
+# data.c4.laplace.lt <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C4"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
+#     results[["C4"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
+#     results[["C4"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
+#     results[["C4"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
+#     results[["C4"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
+#     results[["C4"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
+#   )
+# )
+# 
+# 
+# data.c4.laplace.kurt <- data.frame(
+#   Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+#   Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+#   Value = c(
+#     results[["C4"]][["laplace"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
+#     results[["C4"]][["laplace"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
+#     results[["C4"]][["laplace"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
+#     results[["C4"]][["laplace"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
+#     results[["C4"]][["laplace"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
+#     results[["C4"]][["laplace"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
+#   )
+# )
 
 
 
@@ -471,7 +471,7 @@ f.c2.gaussian.xl = ggplot(data.c2.gaussian.xl, aes(x = Setting, y = Value, fill 
   scale_y_continuous(breaks = c(0.4, 0.5, 0.6, 0.7, 0.8, 0.9)) +
   theme(
     plot.title = element_text(size = 28), ## we must have this line at least in one plot in each row to make "C" label be higher
-    legend.position = "none",           
+    legend.position = "none",
     axis.title.y = element_text(size = 17),
     axis.text.x = element_text(size = 16),  
     axis.text.y = element_text(size = 14) 
@@ -489,10 +489,13 @@ f.c2.gaussian.lt = ggplot(data.c2.gaussian.lt, aes(x = Setting, y = Value, fill 
   scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
   scale_y_continuous(breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
   theme(
-    legend.position = "none",  
+    legend.position = "bottom",  
     axis.title.y = element_text(size = 17),
     axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 14)
+    axis.text.y = element_text(size = 14),
+    legend.text = element_text(size = 16),        # Make legend text bigger
+    legend.title = element_text(size = 18),       # Make legend title bigger
+    legend.key.size = unit(1.7, "cm")
   )
 
 
@@ -517,7 +520,7 @@ f.c2.gaussian.kurt = ggplot(data.c2.gaussian.kurt, aes(x = Setting, y = Value, f
 #plot_grid(f.c2.gaussian.xl, f.c2.gaussian.lt, f.c2.gaussian.kurt, nrow = 1, align = "h", labels = c('C2'), label_size = 25)
 
 plot_grid(f.c2.gaussian.xl, f.c2.gaussian.lt, f.c2.gaussian.kurt, nrow = 1, align = "h",
-           labels = c('C1'), label_size = 25) +
+           labels = c('C2'), label_size = 25) +
   draw_label("Simulation Results with Gaussian Setting", fontface = 'plain', size = 28, hjust = 0.5, vjust = -10)
 
 ## save at 16x5
@@ -525,7 +528,7 @@ plot_grid(f.c2.gaussian.xl, f.c2.gaussian.lt, f.c2.gaussian.kurt, nrow = 1, alig
 ggdraw() +
   draw_plot(
     plot_grid(f.c2.gaussian.xl, f.c2.gaussian.lt, f.c2.gaussian.kurt,
-              nrow = 1, align = "h", labels = c('C1'), label_size = 25),
+              nrow = 1, align = "h", labels = c('C2'), label_size = 25),
     y = -0.038  # Push down by lowering y (0 = bottom, 1 = top)
   ) +
   draw_label("Simulation Results with Gaussian Setting",
@@ -537,21 +540,21 @@ ggdraw() +
 
 ## C3
 
-f.c3.gaussian.xl = ggplot(data.c3.gaussian.xl, aes(x = Setting, y = Value, fill = Method)) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
-  theme_minimal() +
-  labs(title = "",
-       x = "",
-       y = TeX(r"(Cor($\textbf{W}_{XL}, \tilde{\textbf{W}}_{XL}$))"),
-       fill = "Method") +  # Left-align title +
-  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
-  theme(
-    plot.title = element_text(size = 28), ## we must have this line at least in one plot in each row to make "C" label be higher
-    legend.position = "none",             
-    axis.title.y = element_text(size = 17),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 14) 
-  )
+# f.c3.gaussian.xl = ggplot(data.c3.gaussian.xl, aes(x = Setting, y = Value, fill = Method)) +
+#   geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+#   theme_minimal() +
+#   labs(title = "",
+#        x = "",
+#        y = TeX(r"(Cor($\textbf{W}_{XL}, \tilde{\textbf{W}}_{XL}$))"),
+#        fill = "Method") +  # Left-align title +
+#   scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
+#   theme(
+#     plot.title = element_text(size = 28), ## we must have this line at least in one plot in each row to make "C" label be higher
+#     legend.position = "none",             
+#     axis.title.y = element_text(size = 17),
+#     axis.text.x = element_text(size = 16),  
+#     axis.text.y = element_text(size = 14) 
+#   )
 
 
 
@@ -570,111 +573,111 @@ f.c3.gaussian.xl = ggplot(data.c3.gaussian.xl, aes(x = Setting, y = Value, fill 
 #     axis.text.y = element_text(size = 14)
 #   )
 
-f.c3.gaussian.lt = ggplot(data.c3.gaussian.lt, aes(x = Setting, y = Value, fill = Method)) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
-  theme_minimal() +
-  labs(title = "",
-       x = "",
-       y = TeX(r"(Cor($\textbf{W}_{TL}, \tilde{\textbf{W}}_{TL}$))"),
-       fill = "Method") +
-  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
-  scale_y_continuous(breaks = c(0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
-  theme(
-    legend.position = "bottom",          
-    axis.title.y = element_text(size = 17),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 14),
-    legend.text = element_text(size = 16),        # Make legend text bigger
-    legend.title = element_text(size = 18),       # Make legend title bigger
-    legend.key.size = unit(1.7, "cm")  
-  )
+# f.c3.gaussian.lt = ggplot(data.c3.gaussian.lt, aes(x = Setting, y = Value, fill = Method)) +
+#   geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+#   theme_minimal() +
+#   labs(title = "",
+#        x = "",
+#        y = TeX(r"(Cor($\textbf{W}_{TL}, \tilde{\textbf{W}}_{TL}$))"),
+#        fill = "Method") +
+#   scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
+#   scale_y_continuous(breaks = c(0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
+#   theme(
+#     legend.position = "bottom",          
+#     axis.title.y = element_text(size = 17),
+#     axis.text.x = element_text(size = 16),  
+#     axis.text.y = element_text(size = 14),
+#     legend.text = element_text(size = 16),        # Make legend text bigger
+#     legend.title = element_text(size = 18),       # Make legend title bigger
+#     legend.key.size = unit(1.7, "cm")  
+#   )
 
 
 
 
 
 
-f.c3.gaussian.kurt = ggplot(data.c3.gaussian.kurt, aes(x = Setting, y = Value, fill = Method)) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
-  theme_minimal() +
-  labs(title = "",
-       x = "",
-       y = TeX(r"(\kappa$(\tilde{\textbf{W}}_{XL} \, | \, \tilde{\textbf{W}}_{TL})$)"),
-       fill = "Method") +
-  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
-  theme(
-    legend.position = "none",         
-    axis.title.y = element_text(size = 17),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 14)
-  )
-
-## save at 16x6.1
-plot_grid(f.c3.gaussian.xl, f.c3.gaussian.lt, f.c3.gaussian.kurt, nrow = 1, align = "h", labels = c('C2'), label_size = 25)
-
-
-## C4
-
-f.c4.gaussian.xl = ggplot(data.c4.gaussian.xl, aes(x = Setting, y = Value, fill = Method)) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
-  theme_minimal() +
-  labs(title = "",
-    x = "",
-    y = TeX(r"(Cor($\textbf{W}_{XL}, \tilde{\textbf{W}}_{XL}$))"),
-    fill = "Method") +
-  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
-  theme(
-    legend.position = "none",
-    plot.title = element_text(size = 28),   ## we must have this line at least in one plot in each row to make "C" label be higher
-    axis.title.y = element_text(size = 17),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 14) 
-  )
-
-
-
-f.c4.gaussian.lt = ggplot(data.c4.gaussian.lt, aes(x = Setting, y = Value, fill = Method)) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
-  theme_minimal() +
-  labs(title = "",
-       x = "",
-       y = TeX(r"(Cor($\textbf{W}_{TL}, \tilde{\textbf{W}}_{TL}$))"),
-       fill = "Method") +
-  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
-  scale_y_continuous(breaks = c(0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
-  theme(
-    legend.position = "bottom",          
-    axis.title.y = element_text(size = 17),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 14),
-    legend.text = element_text(size = 16),        # Make legend text bigger
-    legend.title = element_text(size = 18),       # Make legend title bigger
-    legend.key.size = unit(1.7, "cm")  
-  )
-
-
-
-
-f.c4.gaussian.kurt = ggplot(data.c4.gaussian.kurt, aes(x = Setting, y = Value, fill = Method)) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
-  theme_minimal() +
-  labs(title = "",
-       x = "",
-       y = TeX(r"(\kappa$(\tilde{\textbf{W}}_{XL} \, | \, \tilde{\textbf{W}}_{TL})$)"),
-       fill = "Method") +
-  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
-  theme(
-    legend.position = "none",             
-    axis.title.y = element_text(size = 17),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 14)  
-  )
-
-
-## Save at 16x5.1 inches
-
-plot_grid(f.c4.gaussian.xl, f.c4.gaussian.lt, f.c4.gaussian.kurt, nrow = 1, align = "h", labels = c('C4'), label_size = 25)
-
+# f.c3.gaussian.kurt = ggplot(data.c3.gaussian.kurt, aes(x = Setting, y = Value, fill = Method)) +
+#   geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+#   theme_minimal() +
+#   labs(title = "",
+#        x = "",
+#        y = TeX(r"(\kappa$(\tilde{\textbf{W}}_{XL} \, | \, \tilde{\textbf{W}}_{TL})$)"),
+#        fill = "Method") +
+#   scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
+#   theme(
+#     legend.position = "none",         
+#     axis.title.y = element_text(size = 17),
+#     axis.text.x = element_text(size = 16),  
+#     axis.text.y = element_text(size = 14)
+#   )
+# 
+# ## save at 16x6.1
+# plot_grid(f.c3.gaussian.xl, f.c3.gaussian.lt, f.c3.gaussian.kurt, nrow = 1, align = "h", labels = c('C2'), label_size = 25)
+# 
+# 
+# ## C4
+# 
+# f.c4.gaussian.xl = ggplot(data.c4.gaussian.xl, aes(x = Setting, y = Value, fill = Method)) +
+#   geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+#   theme_minimal() +
+#   labs(title = "",
+#     x = "",
+#     y = TeX(r"(Cor($\textbf{W}_{XL}, \tilde{\textbf{W}}_{XL}$))"),
+#     fill = "Method") +
+#   scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
+#   theme(
+#     legend.position = "none",
+#     plot.title = element_text(size = 28),   ## we must have this line at least in one plot in each row to make "C" label be higher
+#     axis.title.y = element_text(size = 17),
+#     axis.text.x = element_text(size = 16),  
+#     axis.text.y = element_text(size = 14) 
+#   )
+# 
+# 
+# 
+# f.c4.gaussian.lt = ggplot(data.c4.gaussian.lt, aes(x = Setting, y = Value, fill = Method)) +
+#   geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+#   theme_minimal() +
+#   labs(title = "",
+#        x = "",
+#        y = TeX(r"(Cor($\textbf{W}_{TL}, \tilde{\textbf{W}}_{TL}$))"),
+#        fill = "Method") +
+#   scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
+#   scale_y_continuous(breaks = c(0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
+#   theme(
+#     legend.position = "bottom",          
+#     axis.title.y = element_text(size = 17),
+#     axis.text.x = element_text(size = 16),  
+#     axis.text.y = element_text(size = 14),
+#     legend.text = element_text(size = 16),        # Make legend text bigger
+#     legend.title = element_text(size = 18),       # Make legend title bigger
+#     legend.key.size = unit(1.7, "cm")  
+#   )
+# 
+# 
+# 
+# 
+# f.c4.gaussian.kurt = ggplot(data.c4.gaussian.kurt, aes(x = Setting, y = Value, fill = Method)) +
+#   geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+#   theme_minimal() +
+#   labs(title = "",
+#        x = "",
+#        y = TeX(r"(\kappa$(\tilde{\textbf{W}}_{XL} \, | \, \tilde{\textbf{W}}_{TL})$)"),
+#        fill = "Method") +
+#   scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
+#   theme(
+#     legend.position = "none",             
+#     axis.title.y = element_text(size = 17),
+#     axis.text.x = element_text(size = 16),  
+#     axis.text.y = element_text(size = 14)  
+#   )
+# 
+# 
+# ## Save at 16x5.1 inches
+# 
+# plot_grid(f.c4.gaussian.xl, f.c4.gaussian.lt, f.c4.gaussian.kurt, nrow = 1, align = "h", labels = c('C4'), label_size = 25)
+# 
 
 
 
@@ -776,10 +779,13 @@ f.c2.laplace.lt = ggplot(data.c2.laplace.lt, aes(x = Setting, y = Value, fill = 
        fill = "Method") +
   scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
   theme(
-    legend.position = "none",           
+    legend.position = "bottom",           
     axis.title.y = element_text(size = 17),
     axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 14)
+    axis.text.y = element_text(size = 14),
+    legend.text = element_text(size = 16),        # Make legend text bigger
+    legend.title = element_text(size = 18),       # Make legend title bigger
+    legend.key.size = unit(1.7, "cm")
   )
 
 
