@@ -1,4 +1,3 @@
-#source("/Users/panos/Desktop/MSc Thesis/Code/helper.R")
 library(ggplot2)
 library(cowplot)
 library(pheatmap)
@@ -40,16 +39,16 @@ W.lt.degas_signif[W.lt.degas_signif^2 < 1/ncol(df)] = 0
 
 ## Running GUIDE with ICASSO
 
-ica_nruns = 100
+ica_runs = 100
 
-guide_icasso_t2d = guide_icasso(W = df, K = K, reps = ica_nruns)
+#guide_icasso_t2d = guide_icasso(B = df, K = K, ica_runs = ica_runs)
 
 #unmix_matrix_guide = get_optimal_unmixing_matrix(ica_clustering$unmix.total, ica_clustering$clusters, ica_clustering$cors.unmix)
-unmix_matrix_guide = guide_icasso_t2d$optimal.unmixing.matrix
+#unmix_matrix_guide = guide_icasso_t2d$optimal.unmixing.matrix
 
-guide.list = get_guide(df, K = K, unmixing.matrix = unmix_matrix_guide)
+guide.list = get_guide(df, K = K, ica_runs = ica_runs)
 
-cqi_values = get_cqi_values(guide_icasso_t2d$cors.unmix, guide_icasso_t2d$clusters)
+cqi_values = get_cqi_values(guide.list$cors.unmix, guide.list$clusters)
 
 cluster_ordering = order(cqi_values, decreasing = TRUE)
 
@@ -129,12 +128,12 @@ data %>%
 
 ## dendrogram
 
-cut_height = sort(guide_icasso_t2d$hc$height, decreasing = TRUE)[K-1] 
+cut_height = sort(guide.list$hc$height, decreasing = TRUE)[K-1] 
 
 par(mar = c(1, 7, 4, 0), mgp = c(4.5, 1, 0))  # bottom, left, top, right
 
 ## save at 16x11
-plot(guide_icasso_t2d$hc,
+plot(guide.list$hc,
      hang = 0.01,     # Optional: hang labels at the bottom
      labels = F,
      main = "Dendrogram of ICASSO Clustering",
@@ -190,8 +189,7 @@ unmixing.matrices = list()
 
 for (ii in 1:n_runs) {
 
-  ica_clustering = guide_icasso(W = df, K = K, reps = 100)
-  unmix_matrix_guide = ica_clustering$optimal.unmixing.matrix
+  unmix_matrix_guide = get_guide(df, K = K, ica_runs = 100)$A
   unmixing.matrices[[ii]] = unmix_matrix_guide
   print(ii)
 }

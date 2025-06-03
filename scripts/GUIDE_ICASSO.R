@@ -50,7 +50,7 @@ get.unmixing.matrices <- function(B, K, n.matrices = 10,
                                   verbose = verbose, w.init = w.init)
     
     
-    unmixing.matrices[[i]] = t(unmixing.matrix)
+    unmixing.matrices[[i]] = t(unmixing.matrix) ## transposed unmixing matrix, the components are in the columns
   }
   
   end_time = Sys.time()
@@ -119,9 +119,9 @@ get.nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
 
 ## Function for the novel extension of GUIDE with ICASSO...
 
-guide_icasso <- function(W, K, reps = 20) {
+guide_icasso <- function(B, K, ica_runs = 20) {
   
-  unmixing.matrices = get.unmixing.matrices(W, K = K, n.matrices = reps, verbose = F) ## each component corresponds to a column in the unmixing matrix
+  unmixing.matrices = get.unmixing.matrices(B, K = K, n.matrices = ica_runs, verbose = F) ## each component corresponds to a column in the unmixing matrix
   
   unmix.total = do.call(cbind, unmixing.matrices)
   
@@ -150,6 +150,78 @@ guide_icasso <- function(W, K, reps = 20) {
 }
 
 
+get_optimal_unmixing_matrix <- function(unmix.total, clusters, cors.unmix) {
+  
+  K = length(unique(clusters))
+  
+  final.unmixing.matrix = matrix(0, K, K)
+  
+  for (ii in 1:K) {
+    cluster_points = which(clusters == ii)  
+    sub_cors = cors.unmix[cluster_points, cluster_points]  
+    if (length(cluster_points) == 1) medoid_index = cluster_points
+    else medoid_index = cluster_points[which.max(rowSums(sub_cors))]  
+    final.unmixing.matrix[,ii] = unmix.total[,medoid_index]
+  }
+  return(final.unmixing.matrix)
+}
+
+
+
+get_guide <- function(B, K=10, ica_runs = 1, alg.typ = "parallel", tol = 1e-04, fun = "logcosh",
+                      alpha = 1.0, maxit = 200, verbose = T) {
+  
+  
+  B = scale(B, center = TRUE, scale = FALSE)
+  B = t(scale(t(B), center = TRUE, scale = FALSE))
+  
+  tsvd.list = svd(B)
+  
+  U = tsvd.list$u[,1:K]
+  d = tsvd.list$d[1:K]
+  V = tsvd.list$v[,1:K]
+  
+  
+  if (ica_runs == 1) {
+    
+    A.T = get.unmixing.matrices(B, K = K, n.matrices = 1, verbose = F)[[1]]
+    
+    hc = NULL
+    clusters = NULL
+    cors.unmix = NULL
+  }
+  
+  else {
+    
+    unmixing.matrices = get.unmixing.matrices(B, K = K, n.matrices = ica_runs, verbose = F) ## each component corresponds to a column in the unmixing matrix
+    
+    unmix.total = do.call(cbind, unmixing.matrices)
+    
+    cors.unmix = abs(cor(unmix.total))
+    
+    dist.unmix = 1 - cors.unmix ## distance measure between two components, defined as 1 minus their absolute Pearson correlation
+    
+    hc = hclust(as.dist(dist.unmix), method = "average")
+    
+    clusters = cutree(hc, k = K)
+    
+    A.T = get_optimal_unmixing_matrix(unmix.total, clusters, cors.unmix)
+  }
+  
+  W.xl = U %*% A.T
+  W.lt = V %*% A.T
+  
+  return(list(W.xl = W.xl,
+              W.lt = W.lt,
+              A=A.T,
+              hc = hc,
+              clusters = clusters,
+              cors.unmix = cors.unmix))
+} 
+  
+  
+
+
 
 get_cqi_values <- function(cors.unmix, clusters) {
   
@@ -172,71 +244,7 @@ get_cqi_values <- function(cors.unmix, clusters) {
 
 
 
-
-
-get_guide <- function(B, K=10, unmixing.matrix = NA, alg.typ = "parallel", tol = 1e-04, fun = "logcosh",
-                      alpha = 1.0, maxit = 200, verbose = T) {
-  
-  m = nrow(B)
-  t = ncol(B)
-  
-  B = scale(B, center = TRUE, scale = FALSE)
-  B = t(scale(t(B), center = TRUE, scale = FALSE))
-  
-  tsvd.list = svd(B) #get_tsvd(B, K = starting.K)
-  
-  U = tsvd.list$u[,1:K]
-  d = tsvd.list$d[1:K]
-  V = tsvd.list$v[,1:K]
-  
-  G = cbind(t(U), t(V)) ## The components are in rows
-  
-  G.scaled = G*sqrt((m+t-1)/2)
-  
-  w.init = matrix(rnorm(K^2), K, K) 
-  
-  if (!is.matrix(unmixing.matrix)) {
-    
-    print("Unmixing matrix generated")
-    
-    if (alg.typ == "deflation") 
-      unmixing.matrix = ica.R.def(X = G.scaled,
-                                  n.comp = K,
-                                  tol = tol, fun = fun,
-                                  alpha = alpha, maxit = maxit, 
-                                  verbose = verbose, w.init = w.init)
-    
-    else if (alg.typ == "parallel")
-      unmixing.matrix = ica.R.par(X = G.scaled,
-                                  n.comp = K,
-                                  tol = tol, fun = fun,
-                                  alpha = alpha, maxit = maxit,
-                                  verbose = verbose, w.init = w.init)
-    
-    A.T = t(unmixing.matrix)
-    #print(A)
-  }
-  
-  else A.T = unmixing.matrix ## the unmixing matrix has been given, assumed to be already transposed
-  
-  
-  W.xl = U %*% A.T
-  W.lt = V %*% A.T
-  
-  #W.lt = t(A.T) %*% t(V) 
-  #W.lt = t(W.lt),
-  
-  return(list(A=A.T,
-              W.xl = W.xl,
-              W.lt = W.lt,
-              U=U,
-              d=d,
-              V=V))
-}
-
-
-
-## to be removed
+##### to be removed
 
 get_ica_clustering <- function(W, K, reps = 20) {
 
@@ -251,23 +259,6 @@ hc = hclust(as.dist(dist.unmix), method = "average") ## hierarchical clustering 
 clusters = cutree(hc, k = K) ## cutting the tree at K components
 
 return(list(hc = hc, clusters = clusters, cors.unmix = cors.unmix, unmix.total = unmix.total))
-}
-
-
-get_optimal_unmixing_matrix <- function(unmix.total, clusters, cors.unmix) {
-  
-  K = length(unique(clusters))
-  
-  final.unmixing.matrix = matrix(0, K, K)
-  
-  for (ii in 1:K) {
-    cluster_points = which(clusters == ii)  
-    sub_cors = cors.unmix[cluster_points, cluster_points]  
-    if (length(cluster_points) == 1) medoid_index = cluster_points
-    else medoid_index = cluster_points[which.max(rowSums(sub_cors))]  
-    final.unmixing.matrix[,ii] = unmix.total[,medoid_index]
-  }
-  return(final.unmixing.matrix)
 }
 
 
