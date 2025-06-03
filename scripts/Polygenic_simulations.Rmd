@@ -1,0 +1,398 @@
+
+
+## Simulation 1
+
+
+In this simulation...
+
+### Implementation
+
+
+```{r}
+
+set.seed(4224)
+
+
+## (SNPs, Traits, Latents)
+
+#conf.1 = c(100, 20, 4)
+conf.1 = c(500, 50, 5)
+conf.2 = c(1000, 100, 10)
+#conf.4 = c(3000, 150, 20)
+
+
+n.reps = 300
+
+confs = list(conf.1, conf.2)
+
+
+results = list("C1" = list(), "C2" = list())
+
+for (i in 1:length(results)) {
+  
+  configuration = names(results)[i]
+  results[[configuration]] = list("gaussian" = list(), "laplace" = list())
+
+  for (sampler in names(results[[configuration]])) {
+    results[[configuration]][[sampler]] = list("none" = list(), "low" = list(), "high" = list())
+    
+    for (sparsity in names(results[[configuration]][[sampler]])) {
+      
+      avg.cor.guide.xl = c()
+      avg.cor.guide.lt = c()
+      
+      avg.cor.degas.xl = c()
+      avg.cor.degas.lt = c()
+      
+      avg.kurtosis.guide = c()
+      avg.kurtosis.degas = c()
+      
+      n = confs[[i]][1]
+      p = confs[[i]][2]
+      k = confs[[i]][3]
+      
+      for (jj in 1:n.reps) {
+        
+        sim_polygenic = polygenic_sim(n = n, p = p, k = k, sampler = sampler, sparsity = sparsity)
+        
+        W = sim_polygenic$W
+        W.xl = sim_polygenic$W.xl
+        W.lt = sim_polygenic$W.lt
+        
+        weights.true = rbind(W.xl, W.lt)
+        
+        ## GUIDE
+        
+        #ica_clustering = guide_icasso(W = W, K = k, reps = 20)
+        #a = ica_clustering$optimal.unmixing.matrix
+        guide.list = get_guide(W, K = k, ica_runs = 20, verbose = F)
+        
+        W.xl.guide = guide.list$W.xl
+        W.lt.guide = guide.list$W.lt
+        weights.guide = rbind(W.xl.guide, W.lt.guide)
+        
+        weights.guide.matched = get_matched_weights(weights.true = weights.true,
+                                                    weights.estimated = weights.guide,
+                                                    n.variants = n)
+        
+        W.xl.guide.matched = weights.guide.matched$weights.matched.xl
+        W.lt.guide.matched = weights.guide.matched$weights.matched.lt
+        
+        
+        ## DeGAs
+        
+        degas.list = get_tsvd(scale(W), K = k)
+        W.xl.degas = degas.list$U
+        W.lt.degas = degas.list$V
+        weights.degas = rbind(W.xl.degas, W.lt.degas)
+        
+        weights.degas.matched = get_matched_weights(weights.true = weights.true,
+                                                    weights.estimated = weights.degas,
+                                                    n.variants = n)
+        
+        W.xl.degas.matched = weights.degas.matched$weights.matched.xl
+        W.lt.degas.matched = weights.degas.matched$weights.matched.lt
+        
+        
+        ## Statistics computed for both
+        
+        avg.cor.guide.xl = c(avg.cor.guide.xl, mean(sapply(1:k, function(ii) cor(W.xl[,ii], W.xl.guide.matched[,ii]))))
+        avg.cor.guide.lt = c(avg.cor.guide.lt, mean(sapply(1:k, function(ii) cor(W.lt[,ii], W.lt.guide.matched[,ii]))))
+        
+        avg.cor.degas.xl = c(avg.cor.degas.xl, mean(sapply(1:k, function(ii) cor(W.xl[,ii], W.xl.degas.matched[,ii]))))
+        avg.cor.degas.lt = c(avg.cor.degas.lt, mean(sapply(1:k, function(ii) cor(W.lt[,ii], W.lt.degas.matched[,ii]))))
+        
+        avg.kurtosis.guide = c(avg.kurtosis.guide, mean(apply(weights.guide, 2, kurtosis)) - 3)
+        avg.kurtosis.degas = c(avg.kurtosis.degas, mean(apply(weights.degas, 2, kurtosis)) - 3)
+        
+      }
+      
+      resulting.stats.guide = data.frame(avg.cor.xl = avg.cor.guide.xl,
+                                         avg.cor.lt = avg.cor.guide.lt,
+                                         avg.kurtosis = avg.kurtosis.guide)
+      
+      resulting.stats.degas = data.frame(avg.cor.xl = avg.cor.degas.xl,
+                                         avg.cor.lt = avg.cor.degas.lt,
+                                         avg.kurtosis = avg.kurtosis.degas)
+      
+      
+      results[[configuration]][[sampler]][[sparsity]][["GUIDE"]] = resulting.stats.guide
+      results[[configuration]][[sampler]][[sparsity]][["DeGAs"]] = resulting.stats.degas
+      
+      
+      print(paste("Simulation for configuration", configuration, "with", sampler, "sampler and", sparsity, "sparsity completed."))
+    }
+  }
+}
+
+
+
+```
+
+
+### Collecting the data
+
+
+
+```{r}
+
+data.c1.gaussian.xl <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C1"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - None
+    results[["C1"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
+    results[["C1"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
+    results[["C1"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - None
+    results[["C1"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
+    results[["C1"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
+  )
+)
+
+
+data.c1.gaussian.lt <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C1"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
+    results[["C1"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
+    results[["C1"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
+    results[["C1"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
+    results[["C1"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
+    results[["C1"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
+  )
+)
+
+
+data.c1.gaussian.kurt <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C1"]][["gaussian"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
+    results[["C1"]][["gaussian"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
+    results[["C1"]][["gaussian"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
+    results[["C1"]][["gaussian"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
+    results[["C1"]][["gaussian"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
+    results[["C1"]][["gaussian"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
+  )
+)
+
+
+
+## C2
+
+data.c2.gaussian.xl <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C2"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
+    results[["C2"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
+    results[["C2"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
+    results[["C2"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
+    results[["C2"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
+    results[["C2"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
+  )
+)
+
+
+data.c2.gaussian.lt <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C2"]][["gaussian"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
+    results[["C2"]][["gaussian"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
+    results[["C2"]][["gaussian"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
+    results[["C2"]][["gaussian"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
+    results[["C2"]][["gaussian"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
+    results[["C2"]][["gaussian"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
+  )
+)
+
+
+data.c2.gaussian.kurt <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C2"]][["gaussian"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
+    results[["C2"]][["gaussian"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
+    results[["C2"]][["gaussian"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
+    results[["C2"]][["gaussian"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
+    results[["C2"]][["gaussian"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
+    results[["C2"]][["gaussian"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
+  )
+)
+
+
+#### laplace sampler across all configurations
+
+
+
+## C1
+
+data.c1.laplace.xl <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C1"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
+    results[["C1"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
+    results[["C1"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
+    results[["C1"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
+    results[["C1"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
+    results[["C1"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
+  )
+)
+
+
+data.c1.laplace.lt <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C1"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
+    results[["C1"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
+    results[["C1"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
+    results[["C1"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
+    results[["C1"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
+    results[["C1"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
+  )
+)
+
+
+data.c1.laplace.kurt <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C1"]][["laplace"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
+    results[["C1"]][["laplace"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
+    results[["C1"]][["laplace"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
+    results[["C1"]][["laplace"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
+    results[["C1"]][["laplace"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
+    results[["C1"]][["laplace"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
+  )
+)
+
+
+
+## C2
+
+data.c2.laplace.xl <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C2"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Low
+    results[["C2"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - Medium
+    results[["C2"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.xl,  # GUIDE - High
+    results[["C2"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Low
+    results[["C2"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.xl, # DeGAs - Medium
+    results[["C2"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.xl  # DeGAs - High
+  )
+)
+
+
+data.c2.laplace.lt <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C2"]][["laplace"]][["none"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Low
+    results[["C2"]][["laplace"]][["low"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - Medium
+    results[["C2"]][["laplace"]][["high"]][["GUIDE"]]$avg.cor.lt,  # GUIDE - High
+    results[["C2"]][["laplace"]][["none"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Low
+    results[["C2"]][["laplace"]][["low"]][["DeGAs"]]$avg.cor.lt, # DeGAs - Medium
+    results[["C2"]][["laplace"]][["high"]][["DeGAs"]]$avg.cor.lt  # DeGAs - High
+  )
+)
+
+
+data.c2.laplace.kurt <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), each = 3*n.reps), levels = c("GUIDE", "DeGAs")),
+  Setting = factor(rep(rep(c("None", "Low", "High"), each = n.reps), 2), levels = c("None", "Low", "High")),
+  Value = c(
+    results[["C2"]][["laplace"]][["none"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Low
+    results[["C2"]][["laplace"]][["low"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - Medium
+    results[["C2"]][["laplace"]][["high"]][["GUIDE"]]$avg.kurtosis,  # GUIDE - High
+    results[["C2"]][["laplace"]][["none"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Low
+    results[["C2"]][["laplace"]][["low"]][["DeGAs"]]$avg.kurtosis, # DeGAs - Medium
+    results[["C2"]][["laplace"]][["high"]][["DeGAs"]]$avg.kurtosis  # DeGAs - High
+  )
+)
+
+
+
+```
+
+
+### Plotting
+
+
+```{r}
+
+f.c1.gaussian.xl = ggplot(data.c1.gaussian.xl, aes(x = Setting, y = Value, fill = Method)) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+  theme_minimal() +
+  labs(title = "",
+       x = "",
+       y = TeX(r"(Cor($\textbf{W}_{XL}, \tilde{\textbf{W}}_{XL}$))"),
+       fill = "Method") +
+  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) + 
+  scale_y_continuous(breaks = c(0.4,0.5, 0.6, 0.7, 0.8, 0.9)) +
+  theme(
+    legend.position = "none",           
+    axis.title.y = element_text(size = 17),
+    axis.text.x = element_text(size = 16),  
+    axis.text.y = element_text(size = 14) 
+  )
+
+
+
+f.c1.gaussian.lt = ggplot(data.c1.gaussian.lt, aes(x = Setting, y = Value, fill = Method)) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+  theme_minimal() +
+  labs(#title = "Simulation Results for Gaussian Sampler",
+       title = "",
+       x = "",
+       y = TeX(r"(Cor($\textbf{W}_{TL}, \tilde{\textbf{W}}_{TL}$))"),
+       fill = "Method") +
+  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
+  scale_y_continuous(breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size = 28, hjust = 0.5, vjust = 1.5),         
+    axis.title.y = element_text(size = 17),
+    axis.text.x = element_text(size = 16),  
+    axis.text.y = element_text(size = 14)
+    )
+
+
+
+
+f.c1.gaussian.kurt = ggplot(data.c1.gaussian.kurt, aes(x = Setting, y = Value, fill = Method)) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +  # Dodge to separate groups
+  theme_minimal() +
+  labs(title = "",
+       x = "",
+       y = TeX(r"(\kappa$(\tilde{\textbf{W}}_{XL} \, | \, \tilde{\textbf{W}}_{TL})$)"),
+       fill = "Method") +
+  scale_fill_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +  # Custom Colors
+  theme(
+    legend.position = "none",           
+    axis.title.y = element_text(size = 17),
+    axis.text.x = element_text(size = 16),  
+    axis.text.y = element_text(size = 14)
+  )
+
+
+## Save at 16 x 4.85 inches
+
+plot_grid(f.c1.gaussian.xl, f.c1.gaussian.lt, f.c1.gaussian.kurt, nrow = 1, align = "h", labels = c('C1'), label_size = 25) +
+  draw_label("Simulation Results with Gaussian Setting", fontface = 'plain', size = 28, hjust = 0.5, vjust = -7.65)
+
+
+
+```
+
+
+
+
+
+
+
+
