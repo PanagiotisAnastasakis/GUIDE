@@ -1,5 +1,4 @@
 
-source("/Users/panos/Desktop/MSc Thesis/Code/helper.R")
 library(ggplot2)
 library(pheatmap)
 library(vegan)
@@ -26,18 +25,18 @@ set.seed(4224)
 
 ## (SNPs, Traits, Latents)
 
-conf.1 = c(100, 20, 4)
-conf.2 = c(500, 50, 5)
-conf.3 = c(1000, 100, 10)
-conf.4 = c(3000, 150, 20)
+#conf.1 = c(100, 20, 4)
+conf.1 = c(500, 50, 5)
+conf.2 = c(1000, 100, 10)
+#conf.4 = c(3000, 150, 20)
 
 
 n.reps = 300
 
-confs = list(conf.1, conf.2, conf.3, conf.4)
+confs = list(conf.1, conf.2)
 
 
-results = list("C1" = list(), "C2" = list(), "C3" = list(), "C4" = list())
+results = list("C1" = list(), "C2" = list())
 
 for (i in 1:length(results)) {
   
@@ -74,9 +73,9 @@ for (i in 1:length(results)) {
         
         ## GUIDE
         
-        ica_clustering = guide_icasso(W = W, K = k, reps = 20)
-        a = ica_clustering$optimal.unmixing.matrix
-        guide.list = get_guide(W, K = k, unmixing.matrix = a, verbose = F)
+        #ica_clustering = guide_icasso(W = W, K = k, reps = 20)
+        #a = ica_clustering$optimal.unmixing.matrix
+        guide.list = get_guide(W, K = k, ica_runs = 20, verbose = F)
         
         W.xl.guide = guide.list$W.xl
         W.lt.guide = guide.list$W.lt
@@ -215,9 +214,9 @@ for (sampler in names(results_misspec)) {
         weights.true = rbind(W.xl, W.lt)
         
         ## GUIDE
-        ica_clustering = guide_icasso(W = W, K = k.est, reps = 20)
-        a =ica_clustering$optimal.unmixing.matrix
-        guide.list = get_guide(W, K = k.est, unmixing.matrix = a, verbose = F)
+        #ica_clustering = guide_icasso(W = W, K = k.est, reps = 20)
+        #a =ica_clustering$optimal.unmixing.matrix
+        guide.list = get_guide(W, K = k.est, ica_runs = 20, verbose = F)
         
         W.xl.guide = guide.list$W.xl
         W.lt.guide = guide.list$W.lt
@@ -368,14 +367,14 @@ for (sampler in names(results_misspec_recovery_guide)) {
       
       weights.true = rbind(W.xl, W.lt)
       
-      ica_clustering = guide_icasso(W = W, K = k.est, reps = 20)
-      a = ica_clustering$optimal.unmixing.matrix
-      guide.list = get_guide(W, K = k.est, unmixing.matrix = a, verbose = F)
+      #ica_clustering = guide_icasso(W = W, K = k.est, reps = 20)
+      #a = ica_clustering$optimal.unmixing.matrix
+      guide.list = get_guide(W, K = k.est, ica_runs = 20, verbose = F)
       
       W.xl.guide = guide.list$W.xl
       W.lt.guide = guide.list$W.lt
       weights.guide = rbind(W.xl.guide, W.lt.guide)
-      cqi.vals = get_cqi_values(ica_clustering$cors.unmix, ica_clustering$clusters)
+      cqi.vals = get_cqi_values(guide.list$cors.unmix, guide.list$clusters)
       
       matches = get_matched_weights(weights.true, weights.guide, n.variants = n,
                                       return.only.indices = TRUE)[,2] ## the matched components

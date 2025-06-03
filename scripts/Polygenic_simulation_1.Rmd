@@ -1,5 +1,5 @@
 ---
-author: "Panagiotis Anastasakis (018578388)"
+author: "Panagiotis Anastasakis"
 output: pdf_document
 
 header-includes:

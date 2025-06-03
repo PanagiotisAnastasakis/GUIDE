@@ -1,10 +1,200 @@
+---
+author: "Panagiotis Anastasakis"
+output: pdf_document
+
+header-includes:
+  - |
+    ```{=latex}
+    \usepackage{fvextra}
+    \usepackage{amsmath}
+    \usepackage{algpseudocode}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+      showspaces = false,
+      showtabs = false,
+      breaklines,
+      commandchars=\\\{\}
+    }
+    ```
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(2)
+```
+
+
+```{r}
 
 library(ggplot2)
 library(patchwork)
 library(latex2exp)
 library(cowplot)
 
-results_misspec = readRDS("polygenic_results_misspec.rds")
+```
+
+
+
+
+
+```{r}
+
+
+n.reps = 200
+
+n = 1000
+p = 100
+k = 10
+
+k.est.vals = 2:30
+
+
+results_misspec = list("gaussian" = list(), "laplace" = list())
+sim_list = list("gaussian" = list(), "laplace" = list())
+  
+for (sampler in names(results_misspec)) {
+
+  results_misspec[[sampler]] = list("low" = list(), "high" = list())
+  sim_list[[sampler]] = list("low" = list(), "high" = list())
+  
+  for (sparsity in names(results_misspec[[sampler]])) {
+    
+    results_misspec[[sampler]][[sparsity]] = vector("list", length(k.est.vals)+1) ## the first list corresponds to k=1 and is empty
+    
+    sim_list[[sampler]][[sparsity]] = lapply(1:n.reps, function(...) polygenic_sim(n = n, p = p, k = k, sampler = sampler, sparsity = sparsity)) ## using the same simulated matrices
+    
+    for (k.est in k.est.vals) {
+      
+      avg.cor.guide.xl = c()
+      avg.cor.guide.lt = c()
+      avg.cor.guide.total = c()
+      cor.min.guide = c()
+
+      avg.cor.degas.xl = c()
+      avg.cor.degas.lt = c()
+      avg.cor.degas.total = c()
+      
+      for (jj in 1:n.reps) {
+          
+        sim_polygenic = sim_list[[sampler]][[sparsity]][[jj]]
+        
+        W = sim_polygenic$W
+        W.xl = sim_polygenic$W.xl
+        W.lt = sim_polygenic$W.lt
+        
+        weights.true = rbind(W.xl, W.lt)
+        
+        ## GUIDE
+        
+        guide.list = get_guide(W, K = k.est, ica_runs = 20, verbose = F)
+        
+        W.xl.guide = guide.list$W.xl
+        W.lt.guide = guide.list$W.lt
+        weights.guide = rbind(W.xl.guide, W.lt.guide)
+        
+        ## DeGAs
+        
+        degas.list = get_tsvd(scale(W), K = k.est)
+        W.xl.degas = degas.list$U
+        W.lt.degas = degas.list$V
+        weights.degas = rbind(W.xl.degas, W.lt.degas)
+        
+        if (k.est < k) {
+          
+          weights.guide.matched = get_matched_weights(weights.true = weights.true,
+                                                      weights.estimated = weights.guide,
+                                                      n.variants = n)
+          
+          W.xl.matched = weights.guide.matched$weights.matched.xl
+          W.lt.matched = weights.guide.matched$weights.matched.lt
+          
+          weights.true.matched = rbind(W.xl.matched, W.lt.matched)
+          
+          avg.cor.guide.xl = c(avg.cor.guide.xl, mean(sapply(1:k.est, function(ii) cor(W.xl.matched[,ii], W.xl.guide[,ii]))))
+          avg.cor.guide.lt = c(avg.cor.guide.lt, mean(sapply(1:k.est, function(ii) cor(W.lt.matched[,ii], W.lt.guide[,ii]))))
+          
+          matched.cors = sapply(1:k.est, function(ii) cor(weights.true.matched[,ii], weights.guide[,ii]))
+          cor.min.guide = c(cor.min.guide, min(matched.cors))
+          avg.cor.guide.total = c(avg.cor.guide.total, mean(matched.cors))
+          
+          
+          weights.degas.matched = get_matched_weights(weights.true = weights.true,
+                                                      weights.estimated = weights.degas,
+                                                      n.variants = n)
+          
+          W.xl.matched = weights.degas.matched$weights.matched.xl
+          W.lt.matched = weights.degas.matched$weights.matched.lt
+          
+          weights.true.matched = rbind(W.xl.matched, W.lt.matched)
+          
+          matched.cors = sapply(1:k.est, function(ii) cor(weights.true.matched[,ii], weights.degas[,ii]))
+          avg.cor.degas.total = c(avg.cor.degas.total, mean(matched.cors))
+          
+          avg.cor.degas.xl = c(avg.cor.degas.xl, mean(sapply(1:k.est, function(ii) cor(W.xl.matched[,ii], W.xl.degas[,ii]))))
+          avg.cor.degas.lt = c(avg.cor.degas.lt, mean(sapply(1:k.est, function(ii) cor(W.lt.matched[,ii], W.lt.degas[,ii]))))
+          
+        }
+          
+        else {
+            
+          weights.guide.matched = get_matched_weights(weights.true = weights.true,
+                                                      weights.estimated = weights.guide,
+                                                      n.variants = n)
+          
+          W.xl.guide.matched = weights.guide.matched$weights.matched.xl
+          W.lt.guide.matched = weights.guide.matched$weights.matched.lt
+          
+          weights.guide.matched.total = rbind(W.xl.guide.matched, W.lt.guide.matched)
+          
+          avg.cor.guide.xl = c(avg.cor.guide.xl, mean(sapply(1:k, function(ii) cor(W.xl[,ii], W.xl.guide.matched[,ii]))))
+          avg.cor.guide.lt = c(avg.cor.guide.lt, mean(sapply(1:k, function(ii) cor(W.lt[,ii], W.lt.guide.matched[,ii]))))
+          
+          matched.cors = sapply(1:k, function(ii) cor(weights.true[,ii], weights.guide.matched.total[,ii]))
+          cor.min.guide = c(cor.min.guide, min(matched.cors))
+          avg.cor.guide.total = c(avg.cor.guide.total, mean(matched.cors))
+          
+          
+          weights.degas.matched = get_matched_weights(weights.true = weights.true,
+                                                      weights.estimated = weights.degas,
+                                                      n.variants = n)
+          
+          W.xl.degas.matched = weights.degas.matched$weights.matched.xl
+          W.lt.degas.matched = weights.degas.matched$weights.matched.lt
+          
+          weights.degas.matched.total = rbind(W.xl.degas.matched, W.lt.degas.matched)
+          matched.cors = sapply(1:k, function(ii) cor(weights.true[,ii], weights.degas.matched.total[,ii]))
+          
+          avg.cor.degas.total = c(avg.cor.degas.total, mean(matched.cors))
+          
+          avg.cor.degas.xl = c(avg.cor.degas.xl, mean(sapply(1:k, function(ii) cor(W.xl[,ii], W.xl.degas.matched[,ii]))))
+          avg.cor.degas.lt = c(avg.cor.degas.lt, mean(sapply(1:k, function(ii) cor(W.lt[,ii], W.lt.degas.matched[,ii]))))
+          
+        }
+      }
+      
+    results_misspec[[sampler]][[sparsity]][[k.est]][["GUIDE"]] = data.frame(avg.cor.xl = avg.cor.guide.xl,
+                                                                            avg.cor.lt = avg.cor.guide.lt,
+                                                                            avg.cor.total = avg.cor.guide.total,
+                                                                            cor.min = cor.min.guide)
+    
+    results_misspec[[sampler]][[sparsity]][[k.est]][["DeGAs"]] = data.frame(avg.cor.xl = avg.cor.degas.xl,
+                                                                            avg.cor.lt = avg.cor.degas.lt,
+                                                                            avg.cor.total = avg.cor.degas.total)
+
+    print(paste("Simulation for k =", k.est, "with", sampler, "sampler and", sparsity, "sparsity completed."))
+    }
+  }
+}
+
+
+
+```
+
+
+
+### Collecting the data
+
+
+```{r}
 
 
 get_quantiles <- function(values) {
@@ -248,8 +438,15 @@ data.misspec.laplace.high.cor.min.guide = data.frame(
 )
 
 
-### Plotting
+```
 
+
+
+### Plotting 
+
+
+
+```{r}
 
 colors <- c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")
 
@@ -277,8 +474,8 @@ p.misspec.gaussian.high.xl <- plot_misspec(data.misspec.gaussian.high.xl, "", Te
 p.misspec.gaussian.high.lt <- plot_misspec(data.misspec.gaussian.high.lt, "", TeX(r"(Cor($\textbf{W}_{TL}, \tilde{\textbf{W}}_{TL}$))"))  
 
 legend <- suppressWarnings(get_legend(p.misspec.gaussian.low.xl + theme(legend.position = "right",
-                                                                        legend.text = element_text(size = 16),        # Make legend text bigger
-                                                                        legend.title = element_text(size = 18),       # Make legend title bigger
+                                                                        legend.text = element_text(size = 16),
+                                                                        legend.title = element_text(size = 18),
                                                                         legend.key.size = unit(1.7, "cm"))))
 
 p.misspec.gaussian.low.xl <- p.misspec.gaussian.low.xl + theme(legend.position = "none")
@@ -308,6 +505,12 @@ final_plot_misspec_gaussian <- ggdraw() +
 ## save at 16x12 inches
 final_plot_misspec_gaussian
 
+```
+
+
+
+
+```{r}
 
 ## Plotting Laplace
 
@@ -317,8 +520,8 @@ p.misspec.laplace.high.xl <- plot_misspec(data.misspec.laplace.high.xl, "", TeX(
 p.misspec.laplace.high.lt <- plot_misspec(data.misspec.laplace.high.lt, "", TeX(r"(Cor($\textbf{W}_{TL}, \tilde{\textbf{W}}_{TL}$))"))  
 
 legend <- suppressWarnings(get_legend(p.misspec.laplace.low.xl + theme(legend.position = "right",
-                                                                       legend.text = element_text(size = 16),        # Make legend text bigger
-                                                                       legend.title = element_text(size = 18),       # Make legend title bigger
+                                                                       legend.text = element_text(size = 16),  
+                                                                       legend.title = element_text(size = 18),
                                                                        legend.key.size = unit(1.7, "cm"))))
 
 p.misspec.laplace.low.xl <- p.misspec.laplace.low.xl + theme(legend.position = "none")
@@ -349,109 +552,7 @@ final_plot_misspec_laplace
 
 
 
-
-
-##### Not used
-
-
-
-
-# ## Plotting total correlations
-# 
-# p.misspec.gaussian.low.total <- plot_misspec(data.misspec.gaussian.low.total, "Gaussian Sampler, Low Sparsity", "Total Correlation")  
-# p.misspec.gaussian.high.total <- plot_misspec(data.misspec.gaussian.high.total, "Gaussian Sampler, High Sparsity", "Total Correlation")  
-# p.misspec.laplace.low.total <- plot_misspec(data.misspec.laplace.low.total, "Laplace Sampler, Low Sparsity", "Total Correlation")  
-# p.misspec.laplace.high.total <- plot_misspec(data.misspec.laplace.high.total, "Laplace Sampler, High Sparsity", "Total Correlation")  
-# 
-# legend <- suppressWarnings(get_legend(p.misspec.gaussian.low.total + theme(legend.position = "right",
-#                                                                        legend.text = element_text(size = 16),        # Make legend text bigger
-#                                                                        legend.title = element_text(size = 18),       # Make legend title bigger
-#                                                                        legend.key.size = unit(1.7, "cm"))))
-# 
-# p.misspec.gaussian.low.total <- p.misspec.gaussian.low.total + theme(legend.position = "none",
-#                                                                      plot.title = element_text(size = 20, hjust = 0.5))
-# p.misspec.gaussian.high.total <- p.misspec.gaussian.high.total + theme(legend.position = "none",
-#                                                                        plot.title = element_text(size = 20, hjust = 0.5))
-# p.misspec.laplace.low.total <- p.misspec.laplace.low.total + theme(legend.position = "none",
-#                                                                    plot.title = element_text(size = 20, hjust = 0.5))
-# p.misspec.laplace.high.total <- p.misspec.laplace.high.total + theme(legend.position = "none",
-#                                                                      plot.title = element_text(size = 20, hjust = 0.5))
-# 
-# plots_grid_misspec_total <- plot_grid(
-#   p.misspec.gaussian.low.total, p.misspec.gaussian.high.total,
-#   p.misspec.laplace.low.total, p.misspec.laplace.high.total,
-#   ncol = 2, align = "hv"
-# )
-# 
-# final_plot_misspec_total <- ggdraw() +
-#   draw_label("Model Misspecification Simulation Total Correlations", fontface = 'plain', size = 28, hjust = 0.5, vjust = -20.3) +
-#   draw_plot(
-#     plot_grid(
-#       plots_grid_misspec_total + theme(plot.margin = margin(10, 10, 25, 15)), legend,
-#       ncol = 2, rel_widths = c(1, 0.12)
-#     ),
-#     y = -0.03
-#   )
-# 
-# ## save at 16x12 inches
-# final_plot_misspec_total
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# ### plotting minimum correlation
-# 
-# 
-# plot_min <- function(data, title) {
-#   ggplot(data, aes(x = k, y = median, color = "#D55E00")) +
-#     geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.3, fill = "#D55E00") +
-#     geom_line(linewidth = 1, color = "#D55E00") +
-#     labs(title = title, x = "Number of Components",
-#          y = "Minimum Correlation") +
-#     theme_minimal() +
-#     theme(legend.position = "none",
-#           plot.title = element_text(size = 20, hjust = 0.5),
-#           axis.title.x = element_text(size = 17, vjust = 0.2),
-#           axis.title.y = element_text(size = 17, vjust = 3),
-#           axis.text.x = element_text(size = 16),  
-#           axis.text.y = element_text(size = 14),
-#           plot.margin = margin(20, 10, 20, 10)) +
-#     xlim(0, 30) + 
-#     ylim(0, 1)
-# }
-# 
-# 
-# p.misspec.gaussian.low.cor.min.guide <- plot_min(data.misspec.gaussian.low.cor.min.guide, "Gaussian Sampler, Low Sparsity")  
-# p.misspec.gaussian.high.cor.min.guide <- plot_min(data.misspec.gaussian.high.cor.min.guide, "Gaussian Sampler, High Sparsity")  
-# p.misspec.laplace.low.cor.min.guide <- plot_min(data.misspec.laplace.low.cor.min.guide, "Laplace Sampler, Low Sparsity")  
-# p.misspec.laplace.high.cor.min.guide <- plot_min(data.misspec.laplace.high.cor.min.guide, "Laplace Sampler, High Sparsity")  
-# 
-# plots_grid_misspec_min <- plot_grid(
-#   p.misspec.gaussian.low.cor.min.guide, p.misspec.gaussian.high.cor.min.guide,
-#   p.misspec.laplace.low.cor.min.guide, p.misspec.laplace.high.cor.min.guide,
-#   ncol = 2, align = "hv"
-# )
-# 
-# 
-# final_plot_misspec_min <- ggdraw() +
-#   draw_label("Minimum Correlation of GUIDE Components under Model Misspecification", fontface = 'plain', size = 28, hjust = 0.5, vjust = -20.3) +
-#   draw_plot(
-#     plot_grid(
-#       plots_grid_misspec_min + theme(plot.margin = margin(10, 20, 25, 15))),
-#     y = -0.03
-#   )
-# 
-# ## save at 16x12 inches
-# final_plot_misspec_min
-
-
-
+```
 
 
 
