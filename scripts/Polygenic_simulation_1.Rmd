@@ -29,6 +29,7 @@ library(ggplot2)
 library(patchwork)
 library(latex2exp)
 library(cowplot)
+library(moments)
 
 ```
 
@@ -630,6 +631,87 @@ plot_grid(f.c2.laplace.xl, f.c2.laplace.lt, f.c2.laplace.kurt, nrow = 1, align =
 
 
 ```
+
+
+## Showing how the weights of variants with small allele frequencies are underestimated
+
+
+
+```{r}
+
+set.seed(4)
+
+sampler = "laplace"
+sparsity = "low"
+n = 3000
+p = 150
+k = 20
+
+
+sim_polygenic = polygenic_sim(n = n, p = p, k = k, sampler = sampler, sparsity = sparsity)
+
+W = sim_polygenic$W
+W.xl = sim_polygenic$W.xl
+W.lt = sim_polygenic$W.lt
+afs = sim_polygenic$afs
+
+weights.true = rbind(W.xl, W.lt)
+
+guide.list = get_guide(W, K = k, ica_runs = 20, verbose = F)
+
+W.xl.guide = guide.list$W.xl
+W.lt.guide = guide.list$W.lt
+weights.guide = rbind(W.xl.guide, W.lt.guide)
+
+weights.guide.matched = get_matched_weights(weights.true = weights.true,
+                                            weights.estimated = weights.guide,
+                                            n.variants = n)
+
+W.xl.guide.matched = weights.guide.matched$weights.matched.xl
+W.lt.guide.matched = weights.guide.matched$weights.matched.lt
+
+
+
+## save at 12.5, 9
+plot_simulation(W.xl, W.xl.guide.matched, xlab = "GUIDE Variant Weights", ylab = "Simulated Variant Weights", main = "GUIDE & Simulated Variant Weights")
+plot_simulation(W.lt, W.lt.guide.matched, xlab = "GUIDE Trait Weights", ylab = "Simulated Trait Weights", main = "GUIDE & Simulated Trait Weights")
+
+
+bottom_n_percent_indices <- function(n, vec) {
+  threshold <- quantile(vec, n)
+  which(vec <= threshold)
+}
+
+ind = 7
+perc = 0.05
+
+
+W.xl.guide.comp = W.xl.guide.matched[,ind]
+W.xl.comp = W.xl[,ind]
+top_afs_idx = bottom_n_percent_indices(perc, afs)
+
+
+
+df <- data.frame(W.m = W.xl.guide.comp, W = W.xl.comp)
+
+df_subset <- df[top_afs_idx, ]  
+
+ggplot() +
+  geom_point(data = df, aes(x = W.m, y = W), color = "black", shape = 16) +
+  geom_point(data = df_subset, aes(x = W.m, y = W), color = "red", shape = 4, size = 4) +
+  labs(x = "GUIDE Variant Weights", y = "True Variant Weights", title = "GUIDE & Simulated Variant Weights for one Component") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 28, hjust = 0.5, vjust = 3),
+        axis.title.x = element_text(size = 22, vjust = -3),
+        axis.title.y = element_text(size = 22, vjust = 3),
+        axis.text.x = element_text(size = 16),  
+        axis.text.y = element_text(size = 16),
+        plot.margin = margin(20, 15, 25, 15))
+
+
+
+```
+
 
 
 

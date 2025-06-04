@@ -9,7 +9,7 @@ library(fastICA) ## package for implementation of fastICA
 
 get.unmixing.matrices <- function(B, K, n.matrices = 10,
                                   alg.typ = "parallel", tol = 1e-04, fun = "logcosh",
-                                  alpha = 1.0, maxit = 200, verbose = T) {
+                                  alpha = 1.0, maxit = 200, verbose = F) {
   
   m = nrow(B)
   t = ncol(B)
