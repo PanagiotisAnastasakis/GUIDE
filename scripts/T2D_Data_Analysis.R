@@ -1,3 +1,8 @@
+
+## This file contains the script for analyzing the data from the paper 
+## "Multiancestry polygenic mechanisms of type 2 diabetes", by K. Smith et al.
+
+
 library(ggplot2)
 library(cowplot)
 library(pheatmap)
@@ -13,10 +18,6 @@ library(ggbeeswarm)
 
 set.seed(6941125)
 
-#df = as.matrix(read.csv("/Users/panos/Desktop/MSc Thesis/Data/t2d_data_large.csv", header = T, row.names = 1))
-
-## The data analyzed here comes from the paper "Multiancestry polygenic mechanisms of type 2 diabetes", 
-## by K. Smith et al.
 
 K = 12 ## Number of clusters used in the bNMF analysis of this data
 
@@ -41,11 +42,6 @@ W.lt.degas_signif[W.lt.degas_signif^2 < 1/ncol(df)] = 0
 
 ica_runs = 100
 
-#guide_icasso_t2d = guide_icasso(B = df, K = K, ica_runs = ica_runs)
-
-#unmix_matrix_guide = get_optimal_unmixing_matrix(ica_clustering$unmix.total, ica_clustering$clusters, ica_clustering$cors.unmix)
-#unmix_matrix_guide = guide_icasso_t2d$optimal.unmixing.matrix
-
 guide.list = get_guide(df, K = K, ica_runs = ica_runs)
 
 cqi_values = get_cqi_values(guide.list$cors.unmix, guide.list$clusters)
@@ -64,34 +60,6 @@ W.xl.guide_signif[W.xl.guide_signif^2 < 1/nrow(df)] = 0
 W.lt.guide_signif = W.lt.guide
 W.lt.guide_signif[W.lt.guide_signif^2 < 1/ncol(df)] = 0
 
-
-
-
-
-
-# ## Computing and plotting the CQI scores for each cluster
-# 
-# cqi_df <- data.frame(Cluster = factor(1:K), 
-#                      CQI_Score = cqi_values)
-# 
-# cqi_df <- cqi_df[order(cqi_df$CQI_Score, decreasing = T), ]
-# 
-# #cqi_df$Cluster <- factor(cqi_df$Cluster, levels = cqi_df$Cluster)
-# cqi_df$Cluster <- factor(1:K)
-# 
-# ggplot(cqi_df, aes(x = Cluster, y = CQI_Score)) +
-#   geom_bar(stat = "identity", fill = "steelblue") +
-#   theme_minimal() +
-#   labs(title = "Cluster Quality Index (CQI) Across Clusters",
-#        x = "Cluster",
-#        y = "CQI Score") +
-#   #theme(axis.text.x = element_text(angle = 45, hjust = 1))
-#   theme(plot.title = element_text(size = 28, hjust = 0.5, vjust = 3),
-#         axis.title.x = element_text(size = 22, vjust = -3),
-#         axis.title.y = element_text(size = 22, vjust = 3),
-#         axis.text.x = element_text(size = 16),  
-#         axis.text.y = element_text(size = 16),
-#         plot.margin = margin(20, 15, 25, 15))
 
 
 
@@ -130,11 +98,11 @@ data %>%
 
 cut_height = sort(guide.list$hc$height, decreasing = TRUE)[K-1] 
 
-par(mar = c(1, 7, 4, 0), mgp = c(4.5, 1, 0))  # bottom, left, top, right
+par(mar = c(1, 7, 4, 0), mgp = c(4.5, 1, 0))  
 
 ## save at 16x11
 plot(guide.list$hc,
-     hang = 0.01,     # Optional: hang labels at the bottom
+     hang = 0.01,    
      labels = F,
      main = "Dendrogram of ICASSO Clustering",
      ylab = "Distance",
@@ -149,15 +117,12 @@ segments(x0 = 0.5,
          lwd = 2, 
          lty = 2)
 
-
-
-
-
-
 par(def_par)
 
 
-## showing that one ICA run => need for ICASSO demonstration
+
+
+## showing that one ICA run is less consistent than the proposed ICASSO extension
 
 n_runs = 150
 
@@ -215,7 +180,7 @@ for (i in 1:ncol(combs)) {
       if (abs(cor(A.1[,ii], A.2[,jj])) > 0.95) { 
         
         components = components + 1
-        break ## if matching columns are found stop searching and continue to the next column
+        break
       }
     }
   }
@@ -233,7 +198,6 @@ icasso_comps = ggplot(data.frame(n.selected.components), aes(x = n.selected.comp
        y = "Frequency" ) +
   theme_minimal() +
   scale_x_continuous(breaks = 3:12, limits = c(3, 12.25)) +
-  #scale_x_continuous(breaks = 3:max(n.selected.components)) +
   theme(plot.title = element_text(size = 20, hjust = 0.5, vjust = 3),
         axis.title.x = element_text(size = 17, vjust = -0.5),              
         axis.title.y = element_text(size = 17, vjust = 3),
@@ -261,11 +225,6 @@ icasso_ica_total <- ggdraw() +
 
 ## save at 16x6.9 inches
 icasso_ica_total
-
-
-
-
-
 
 
 
@@ -325,7 +284,6 @@ cluster_circle_plot(total_weights_guide[,cluster_number],
 ## 11 -> Obesity
 ## 12 -> Lipodystrophy 1
 
-## the first 5 clusters are generally consistent across runs
 
 
 
@@ -338,16 +296,6 @@ cluster_circle_plot(total_weights_guide[,1],
                     total_names = total_names,
                     title = paste("GUIDE Cluster", 1),
                     rotate = 20)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -439,11 +387,6 @@ grid.draw(
     )
   )
 )
-
-
-
-## interesting result: the first GUIDE components do not share many similarities with
-## the DeGAs components, but the later GUIDE components (sort of) do
 
 
 
@@ -551,20 +494,11 @@ grid.draw(
 
 
 
+## Plots related to component sparsity
 
 
+### Plotting cumulative contribution scores
 
-## addressing sparsity
-
-
-
-
-
-
-## 2) These plots for both variants and traits
-
-## Fix legend, use it only for lt, make 1 plot of them together(?)
-## Fix names
 
 plot_data_xl <- lapply(1:K, function(ii) {
   sorted_degas <- cumsum(sort(W.xl.degas[,ii]^2, decreasing = TRUE))
@@ -592,7 +526,6 @@ plot_xl = ggplot(plot_data_xl, aes(x = Index, y = CumSum, color = Method, group 
     x = "Number of Variants",
     y = "Variant Cumulative Contribution Scores",
     title = "",
-    #title = "Cumulative Variant Contribution Scores",
     fill = "Method"
   ) +
   scale_color_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +
@@ -638,7 +571,6 @@ plot_lt = ggplot(plot_data_lt, aes(x = Index, y = CumSum, color = Method, group 
     x = "Number of Traits",
     y = "Trait Cumulative Contribution Scores",
     title = "",
-    #title = "Cumulative Trait Contribution Scores",
     fill = "Method"
   ) +
   scale_color_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +
@@ -658,7 +590,6 @@ plot_lt = ggplot(plot_data_lt, aes(x = Index, y = CumSum, color = Method, group 
 
 combined_plot <- plot_grid(plot_xl, plot_lt, nrow = 1, align = "h")
 
-# Add a common title
 title <- ggdraw() + 
   draw_label(
     "GUIDE & DeGAs Cumulative Contribution Scores", 
@@ -672,6 +603,143 @@ plot_grid(title, combined_plot, ncol = 1, rel_heights = c(0.05, 1))
 
 
 
+## Plots for the kurtosis values for each component and the
+## number of variants and traits loaded onto each, separately for GUIDE and DeGAs
+
+
+
+
+k.guide.total = c()
+k.degas.total = c()
+
+for (ii in 1:K) {
+  
+  k.guide = round(kurtosis(c(W.xl.guide[,ii], W.lt.guide[,ii])) - 3, 1)
+  k.degas = round(kurtosis(c(W.xl.degas[,ii], W.lt.degas[,ii])) - 3, 1)
+  
+  k.guide.total = c(k.guide.total, k.guide)
+  k.degas.total = c(k.degas.total, k.degas)
+}
+
+cbind(k.guide.total, k.degas.total)
+
+
+colSums(W.xl.guide_signif != 0)
+colSums(W.xl.degas_signif != 0)
+
+colSums(W.lt.guide_signif != 0)
+colSums(W.lt.degas_signif != 0)
+
+
+nrow(df) - sum(apply(W.xl.guide_signif, 1, function(row) all(row == 0)))
+nrow(df) - sum(apply(W.xl.degas_signif, 1, function(row) all(row == 0)))
+
+ncol(df) - sum(apply(W.lt.guide_signif, 1, function(row) all(row == 0)))
+ncol(df) - sum(apply(W.lt.degas_signif, 1, function(row) all(row == 0)))
+
+
+
+
+kurt.df <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), c(length(k.guide.total), length(k.degas.total))),
+                  levels = c("GUIDE", "DeGAs")),
+  Value = c(k.guide.total, k.degas.total)
+)
+
+kurt_plot = ggplot(kurt.df, aes(x = Method, y = Value, colour = Method)) +
+  geom_beeswarm(cex = 1.8, size = 3) +
+  scale_color_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +
+  theme_minimal() +
+  scale_y_continuous(breaks = seq(0,350,by=50)) +
+  labs(title = "Kurtosis Values",
+       x = NULL,
+       y = "Kurtosis" ) +
+  theme(
+    plot.title = element_text(size = 20, hjust = 0.5, vjust = 3),
+    axis.title.x = element_text(size = 19, vjust = -0.5),              
+    axis.title.y = element_text(size = 19, vjust = 3),
+    axis.text.x = element_text(size = 16),  
+    axis.text.y = element_text(size = 16),
+    plot.margin = margin(20, 10, 20, 15),
+    legend.position = "none"
+  )
+
+
+
+
+
+vars.load.df <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), c(K, K)),
+                  levels = c("GUIDE", "DeGAs")),
+  Value = c(colSums(W.xl.guide_signif != 0), colSums(W.xl.degas_signif != 0))
+)
+
+var_plot = ggplot(vars.load.df, aes(x = Method, y = Value, colour = Method)) +
+  geom_beeswarm(cex = 1.3, size = 3) +
+  scale_color_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +
+  theme_minimal() +
+  scale_y_continuous(breaks = seq(0,180,by=20)) +
+  labs(title = "Variants Loaded",
+       x = NULL,
+       y = "Number of Variants" ) +
+  theme(
+    plot.title = element_text(size = 20, hjust = 0.5, vjust = 3),
+    axis.title.x = element_text(size = 19, vjust = -0.5),              
+    axis.title.y = element_text(size = 19, vjust = 3),
+    axis.text.x = element_text(size = 16),  
+    axis.text.y = element_text(size = 16),
+    plot.margin = margin(20, 10, 20, 15),
+    legend.position = "none"
+  )
+
+
+
+traits.load.df <- data.frame(
+  Method = factor(rep(c("GUIDE", "DeGAs"), c(K, K)),
+                  levels = c("GUIDE", "DeGAs")),
+  Value = c(colSums(W.lt.guide_signif != 0), colSums(W.lt.degas_signif != 0))
+)
+
+trait_plot = ggplot(traits.load.df, aes(x = Method, y = Value, colour = Method)) +
+  geom_beeswarm(cex = 1.3, size = 3) +
+  scale_color_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +
+  theme_minimal() +
+  scale_y_continuous(breaks = seq(0,40,by=10)) +
+  labs(title = "Traits Loaded",
+       x = NULL,
+       y = "Number of Traits" ) +
+  theme(
+    plot.title = element_text(size = 20, hjust = 0.5, vjust = 3),
+    axis.title.x = element_text(size = 19, vjust = -0.5),              
+    axis.title.y = element_text(size = 19, vjust = 3),
+    axis.text.x = element_text(size = 16),  
+    axis.text.y = element_text(size = 16),
+    plot.margin = margin(20, 10, 20, 15),
+    legend.position = "right",
+    legend.text = element_text(size = 16),       
+    legend.title = element_text(size = 18, hjust = 0.5),   
+    legend.key.size = unit(1.7, "cm")
+  )
+
+
+tight_theme <- theme(plot.margin = margin(0, -30, 0, -50))
+plots_icasso_ica <- plot_grid(
+  kurt_plot + tight_theme, var_plot + tight_theme, trait_plot + tight_theme, 
+  ncol = 3, align = "hv"
+)
+
+icasso_ica_total <- ggdraw() +
+  draw_label("GUIDE & DeGAs Component Sparsity Measures", fontface = 'plain', size = 28, hjust = 0.54, vjust = -20.5) +
+  draw_plot(
+    plot_grid(
+      plots_icasso_ica + theme(plot.margin = margin(30, 30, 85, 35))
+    ),
+    y = -0.08,
+    x = 0.025
+  )
+
+## save at 15.5x12.5 inches
+icasso_ica_total
 
 
 
@@ -679,37 +747,36 @@ plot_grid(title, combined_plot, ncol = 1, rel_heights = c(0.05, 1))
 
 
 
-## 4) Heatmaps for GUIDE and DeGAs variant and phenotype matrices (in appendix)
 
 
-
+## Heatmaps for GUIDE and DeGAs variant and phenotype matrices (not included in thesis)
 
 
 
 guide_heatmap_xl <- pheatmap(W.xl.guide,
-                       cluster_rows = FALSE,
-                       cluster_cols = FALSE,
-                       breaks = seq(-1, 1, length.out = 101),
-                       color = colorRampPalette(c("navy", "gainsboro", "firebrick3"))(100),
-                       main = "Variant Weights",
-                       legend = FALSE,
-                       fontsize_number = 15,
-                       fontsize_row = 16,
-                       fontsize_col = 16,
-                       fontsize = 20,
-                       angle_col = 45)
+                             cluster_rows = FALSE,
+                             cluster_cols = FALSE,
+                             breaks = seq(-1, 1, length.out = 101),
+                             color = colorRampPalette(c("navy", "gainsboro", "firebrick3"))(100),
+                             main = "Variant Weights",
+                             legend = FALSE,
+                             fontsize_number = 15,
+                             fontsize_row = 16,
+                             fontsize_col = 16,
+                             fontsize = 20,
+                             angle_col = 45)
 
 guide_heatmap_lt <- pheatmap(W.lt.guide,
-                       cluster_rows = FALSE,
-                       cluster_cols = FALSE,
-                       breaks = seq(-1, 1, length.out = 101),
-                       color = colorRampPalette(c("navy", "gainsboro", "firebrick3"))(100),
-                       main = "Trait Weights",
-                       fontsize_number = 15,
-                       fontsize_row = 16,
-                       fontsize_col = 16,
-                       fontsize = 20,
-                       angle_col = 45)
+                             cluster_rows = FALSE,
+                             cluster_cols = FALSE,
+                             breaks = seq(-1, 1, length.out = 101),
+                             color = colorRampPalette(c("navy", "gainsboro", "firebrick3"))(100),
+                             main = "Trait Weights",
+                             fontsize_number = 15,
+                             fontsize_row = 16,
+                             fontsize_col = 16,
+                             fontsize = 20,
+                             angle_col = 45)
 
 
 ## save at 17x9.5
@@ -780,166 +847,6 @@ grid.draw(
     )
   )
 )
-
-
-
-
-
-
-
-
-
-## 5) text:
-
-## 5a) Report the total number of variants/traits loaded onto the
-## GUIDE and DeGAs clusters out of the 650 and 110 respectively.
-
-
-## 1a) Kurtosis values for each cluster
-## 1b) Number of variants and traits loaded onto (in table?)
-
-
-
-
-
-
-k.guide.total = c()
-k.degas.total = c()
-
-for (ii in 1:K) {
-  
-  k.guide = round(kurtosis(c(W.xl.guide[,ii], W.lt.guide[,ii])) - 3, 1)
-  k.degas = round(kurtosis(c(W.xl.degas[,ii], W.lt.degas[,ii])) - 3, 1)
-  
-  k.guide.total = c(k.guide.total, k.guide)
-  k.degas.total = c(k.degas.total, k.degas)
-}
-
-cbind(k.guide.total, k.degas.total)
-
-
-colSums(W.xl.guide_signif != 0)
-colSums(W.xl.degas_signif != 0)
-
-colSums(W.lt.guide_signif != 0)
-colSums(W.lt.degas_signif != 0)
-
-
-nrow(df) - sum(apply(W.xl.guide_signif, 1, function(row) all(row == 0)))
-nrow(df) - sum(apply(W.xl.degas_signif, 1, function(row) all(row == 0)))
-
-ncol(df) - sum(apply(W.lt.guide_signif, 1, function(row) all(row == 0)))
-ncol(df) - sum(apply(W.lt.degas_signif, 1, function(row) all(row == 0)))
-
-
-
-
-kurt.df <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), c(length(k.guide.total), length(k.degas.total))),
-                  levels = c("GUIDE", "DeGAs")),
-  Value = c(k.guide.total, k.degas.total)
-)
-
-# Plot
-kurt_plot = ggplot(kurt.df, aes(x = Method, y = Value, colour = Method)) +
-  geom_beeswarm(cex = 1.8, size = 3) +
-  scale_color_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +
-  theme_minimal() +
-  scale_y_continuous(breaks = seq(0,350,by=50)) +
-  labs(title = "Kurtosis Values",
-       x = NULL,
-       y = "Kurtosis" ) +
-  theme(
-    plot.title = element_text(size = 20, hjust = 0.5, vjust = 3),
-    axis.title.x = element_text(size = 19, vjust = -0.5),              
-    axis.title.y = element_text(size = 19, vjust = 3),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 16),
-    plot.margin = margin(20, 10, 20, 15),
-    legend.position = "none"
-  )
-
-
-
-
-
-
-
-vars.load.df <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), c(K, K)),
-                  levels = c("GUIDE", "DeGAs")),
-  Value = c(colSums(W.xl.guide_signif != 0), colSums(W.xl.degas_signif != 0))
-)
-
-# Plot
-var_plot = ggplot(vars.load.df, aes(x = Method, y = Value, colour = Method)) +
-  geom_beeswarm(cex = 1.3, size = 3) +
-  scale_color_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +
-  theme_minimal() +
-  scale_y_continuous(breaks = seq(0,180,by=20)) +
-  labs(title = "Variants Loaded",
-       x = NULL,
-       y = "Number of Variants" ) +
-  theme(
-    plot.title = element_text(size = 20, hjust = 0.5, vjust = 3),
-    axis.title.x = element_text(size = 19, vjust = -0.5),              
-    axis.title.y = element_text(size = 19, vjust = 3),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 16),
-    plot.margin = margin(20, 10, 20, 15),
-    legend.position = "none"
-  )
-
-
-
-traits.load.df <- data.frame(
-  Method = factor(rep(c("GUIDE", "DeGAs"), c(K, K)),
-                  levels = c("GUIDE", "DeGAs")),
-  Value = c(colSums(W.lt.guide_signif != 0), colSums(W.lt.degas_signif != 0))
-)
-
-# Plot
-trait_plot = ggplot(traits.load.df, aes(x = Method, y = Value, colour = Method)) +
-  geom_beeswarm(cex = 1.3, size = 3) +
-  scale_color_manual(values = c("GUIDE" = "#E69F00", "DeGAs" = "#56B4E9")) +
-  theme_minimal() +
-  scale_y_continuous(breaks = seq(0,40,by=10)) +
-  labs(title = "Traits Loaded",
-       x = NULL,
-       y = "Number of Traits" ) +
-  theme(
-    plot.title = element_text(size = 20, hjust = 0.5, vjust = 3),
-    axis.title.x = element_text(size = 19, vjust = -0.5),              
-    axis.title.y = element_text(size = 19, vjust = 3),
-    axis.text.x = element_text(size = 16),  
-    axis.text.y = element_text(size = 16),
-    plot.margin = margin(20, 10, 20, 15),
-    legend.position = "right",
-    legend.text = element_text(size = 16),       
-    legend.title = element_text(size = 18, hjust = 0.5),   
-    legend.key.size = unit(1.7, "cm")
-  )
-
-
-tight_theme <- theme(plot.margin = margin(0, -30, 0, -50))
-plots_icasso_ica <- plot_grid(
-  kurt_plot + tight_theme, var_plot + tight_theme, trait_plot + tight_theme, 
-  ncol = 3, align = "hv"
-)
-
-icasso_ica_total <- ggdraw() +
-  draw_label("GUIDE & DeGAs Component Sparsity Measures", fontface = 'plain', size = 28, hjust = 0.54, vjust = -20.5) +
-  draw_plot(
-    plot_grid(
-      plots_icasso_ica + theme(plot.margin = margin(30, 30, 85, 35))
-    ),
-    y = -0.08,
-    x = 0.025
-  )
-
-## save at 15.5x12.5 inches
-icasso_ica_total
-
 
 
 
