@@ -3,20 +3,24 @@ library(ExtDist)
 library(ggplot2)
 
 
-## Function to find the correct permutation and sign for a set of simulated/estimated weights.
+## Function to find the optimal permutation (and possible sign change) to match
+## a set of true component weights and a set of estimated ones.
 
 get_matched_weights <- function(weights.true, weights.estimated, n.variants,
                                 return.only.indices = FALSE) {
   
   ### Inputs
-  ## weights.true: the simulated (true) weights to and from the latent factors, concatenated. It has dimension (n+p)xL,
-  ##               where n is the number of variants, p is the number of traits and L is the true number of latents.
+  ## weights.true: the simulated (true) weights to and from the latent components, concatenated. It has dimension (n+p)xL,
+  ##               where n is the number of variants, p is the number of traits and L is the true number of components.
   ## weights.estimated: the estimated weights to and from the latent factors concatenated, with dimension (n+p)xK,
-  ##               where K is the number of components we estimated and can differ from L.
+  ##               where K is the number of components they are estimated with and may differ from L.
+  ## n.variants: the number of variants in the genetic architecture (used to separate the variant and trait weights in the end)
+  ## return.only.indices: whether to return only the matched indices between the two sets of weights, and not the weights themselves
   
-  ### Output: a matrix with two columns and min(L,K), the first containing the ordering of the estimated weights to
-  ##          match the true ones and the second containing either 1 or -1, depending on whether the matched weights are
-  ##          positively or negatively correlated.
+  ### Output:
+  ## If return.only.indices == TRUE, then only the indices for the matchings are returned
+  ## If L>K, then the first K true weights that are best matched with all the K estimated ones are returned as a list, separately for variants and traits
+  ## If L<=K, then all the L true weights are matched with L of the estimated ones, which are then returned as a list, separately for variants and traits
   
   L = ncol(weights.true) 
   K = ncol(weights.estimated) 
@@ -55,9 +59,9 @@ get_matched_weights <- function(weights.true, weights.estimated, n.variants,
   if (K < L) {
     sorted.matches = matches[order(matches[, 2]), ]
     
-    weights.matched = weights.true[,sorted.matches[,1]] %*% diag(sorted.matches[,3])
+    weights.matched = weights.true[,sorted.matches[,1]] %*% diag(sorted.matches[,3]) ## we re-order the estimated components and multiply them with either -1 or 1 to correct for sign change
     
-    weights.matched.xl = head(weights.matched, n.variants) ## we match the true ones !!
+    weights.matched.xl = head(weights.matched, n.variants) ## we match a subset of the true components with all estimated ones!! ## we keep the first n rows, as these correspond to variants (W.xl.estimated) and the rest (below) are the traits (W.lt.estimated)
     weights.matched.lt = tail(weights.matched, nrow(weights.matched) - n.variants)
     
   }
@@ -80,8 +84,6 @@ get_matched_weights <- function(weights.true, weights.estimated, n.variants,
 
 
 ## Function to plot either the variants-to-latents or the latents-to-traits weights, both assumed to be matched.
-
-
 
 plot_simulation <- function(weights.true, weights.estimated, xlab, ylab, main) {
   
@@ -125,15 +127,12 @@ generate_latent_effect_matrix <- function(n, n.latents, lower, upper, dependence
   
   ### Inputs
   ## n: the number of vertices (either variants or traits)
-  ## n.latents: the number of latents of the simulated structure
+  ## n.latents: the number of latent components of the simulated structure
   ## lower, upper: the lower and upper bounds for the Uniform distribution from which the weights are sampled
-  ## dependence.prob: for this simulation strategy, we initially assume that the vertices are clustered in `n.latents` different clusters of same size `n`/`n.latents`,
-  ##                  and that the effects to/from the i'th latent are sampled from the vector `effs` for the i'th cluster and are 0 for all other clusters.
-  ##                  Because this scenario is idealized, we add the option of introducing dependencies, but assigning a probability
-  ##                  `dependence.prob` for each vertex outside the cluster to have an effect, randomly sampled from the vector `effs`.
-  ## noise.sd: the standard deviation for sampling a matrix from the gaussian distribution with mean 0 to add to the generated latent effect matrix
+  ## dependence.prob: value between 0 and 1, corresponding to the degree of dependence between components
+  ## noise.sd: the standard deviation for sampling valus from the gaussian distribution with mean 0
   
-  ### Output: the latent effect matrix (either Wxl or Wlt)
+  ### Output: the latent effect matrix 
   
   W = matrix(0, nrow = n, ncol = n.latents)
   
@@ -142,23 +141,13 @@ generate_latent_effect_matrix <- function(n, n.latents, lower, upper, dependence
     row_start = (i - 1) * (n / n.latents) + 1
     row_end = i * (n / n.latents)
     
-    #block = sample(effs, (n / n.latents), replace=T)
     block = runif(n / n.latents, min = lower, max = upper)
     
     W[row_start:row_end, i] = block
     
     if (dependence.prob > 0) {
-      remaining.effs = replicate(n - n/n.latents, ifelse(runif(1) < dependence.prob, runif(1, min = lower, max = upper), 0))
-                                 
-      #                            {
-      #   
-      #   if (runif(1) < dependence.prob) {
-      #     runif(1, min = lower, max = upper)
-      #   } else {
-      #     0
-      #   }
-      # })
       
+      remaining.effs = replicate(n - n/n.latents, ifelse(runif(1) < dependence.prob, runif(1, min = lower, max = upper), 0))
       W[-(row_start:row_end), i] = remaining.effs
     }
   }
@@ -173,9 +162,16 @@ generate_latent_effect_matrix <- function(n, n.latents, lower, upper, dependence
 ## Function for simulations under a polygenic additive model
 
 
-polygenic_sim <- function(n, p, k, sampler = "gaussian", sparsity = "none", h.sq = 0.1, Nsamples = 1e5) {#, return.afs = F) {
+polygenic_sim <- function(n, p, k, sampler = "gaussian", sparsity = "none", h.sq = 0.1, Nsamples = 1e5) {
   
-  ## Nsamples controls the power and thus the standard error. Higher sample size means smaller SE
+  ### Inputs
+  ## n,p,k: the number of variants, traits, components respectively
+  ## sampler: the distribution from which the weights are sampled from (either gaussian or laplace)
+  ## sparsity: the level of sparsity for the weights, which is none, low, or high
+  ## h.sq: the heritability assumed in the genetic architecture
+  ## Nsamples: the number of samples assumed for each effect size. Here it controls the power and thus the standard error. Higher sample size means smaller SE
+  
+  ### Output: a list consisting of the simulated variant weights, trait weights and the simulated allele frequencies for each variant
   
   afs = runif(n, 0.01, 0.5)
   
@@ -221,14 +217,13 @@ polygenic_sim <- function(n, p, k, sampler = "gaussian", sparsity = "none", h.sq
   
   SEs = sqrt(1/(Nsamples*2*afs*(1-afs)))
   
-  E = do.call("cbind", lapply(1:p, function(j) rnorm(n, sd = SEs))) ##noise (assuming independent SNPs)
+  E = do.call("cbind", lapply(1:p, function(j) rnorm(n, sd = SEs))) ## noise (assuming independent SNPs, hence LD=0)
   
   B = B + E ## adding noise
   
   W = B / replicate(p, SEs) ## dividing by the standard errors to get the z-scores
   
-  #if (return.afs) return(list(W = W, W.xl = W.xl, W.lt = W.lt, afs = afs))
-  
+
   return(list(W = W, W.xl = W.xl, W.lt = W.lt, afs = afs))
 }
 

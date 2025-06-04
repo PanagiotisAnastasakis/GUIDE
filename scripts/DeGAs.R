@@ -3,8 +3,8 @@
 ## Decomposition of Genetic Associations (DeGAs), which employs truncated SVD.
 ## Two approaches for choosing the number of components are considered:
 
-## 1) Proportion of variance explained: we require that the first K components explain p% of the variance
-## 2) Above average squared singular values. The "average" is computed as the sum of squared singular values, divided by the rank of the matrix
+## 1) Proportion of variance explained: we require that the first K components explain p*100% of the variance
+## 2) Above average eigenvalues. The "average" is computed as the sum of squared singular values, divided by the rank of the matrix
 
 
 get_tsvd <- function(B, K=0, method="average_eig", p=0.7) {

@@ -5,11 +5,19 @@ library(fastICA) ## package for implementation of fastICA
 ## Functions for the decomposition of a GWAS summary statistics matrix using the method
 ## Genetic Unmixing by Independent Decomposition (GUIDE).
 
-## Function to get unmixing matrices from multiple ICA runs
+## Function to get GUIDE unmixing matrices from multiple ICA runs
 
 get.unmixing.matrices <- function(B, K, n.matrices = 10,
                                   alg.typ = "parallel", tol = 1e-04, fun = "logcosh",
                                   alpha = 1.0, maxit = 200, verbose = F) {
+  
+  ### Inputs
+  ## B: the matrix with the summary statistics
+  ## K: the number of components
+  ## n.matrices: the number of unmixing matrices to generate
+  ## all other inputs are parameters for FastICA
+  
+  ### Output: a list of unmixing matrices
   
   m = nrow(B)
   t = ncol(B)
@@ -17,7 +25,7 @@ get.unmixing.matrices <- function(B, K, n.matrices = 10,
   B = scale(B, center = TRUE, scale = FALSE)
   B = t(scale(t(B), center = TRUE, scale = FALSE))
   
-  tsvd.list = svd(B) #get_tsvd(B, K = starting.K)
+  tsvd.list = svd(B) 
   
   U = tsvd.list$u[,1:K]
   d = tsvd.list$d[1:K]
@@ -28,8 +36,6 @@ get.unmixing.matrices <- function(B, K, n.matrices = 10,
   G.scaled = G*sqrt((m+t-1)/2) ## scaling to ensure that cov = I. It holds that m+t == nrow(G)
   
   unmixing.matrices = list()
-  
-  start_time = Sys.time()
   
   for (i in 1:n.matrices) {
     
@@ -53,10 +59,6 @@ get.unmixing.matrices <- function(B, K, n.matrices = 10,
     unmixing.matrices[[i]] = t(unmixing.matrix) ## transposed unmixing matrix, the components are in the columns
   }
   
-  end_time = Sys.time()
-  elapsed_time = as.numeric(difftime(end_time, start_time, units = "mins"))
-  #print(paste(n.matrices, "unmixing matrices generated in", round(elapsed_time,2), "minutes"))
-  
   return(unmixing.matrices)
 }
 
@@ -66,6 +68,10 @@ get.unmixing.matrices <- function(B, K, n.matrices = 10,
 ## Lazarev et al. in the paper "GUIDE deconstructs genetic architectures using association studies",
 ## where GUIDE was introduced.
 
+## Using different initializations with the same input, a pre-specified number of unmixing matrices
+## is generated. Then, all possible pairs are compared to in terms of how many matching columns they have
+## and the median is reported as the final estimate of the number of latent components.
+
 
 get.nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
                          alg.typ = "parallel", return.estimates = F) {
@@ -73,11 +79,13 @@ get.nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
   ### Inputs
   ## B: the matrix with the summary statistics
   ## starting.K: the starting number of components
-  ## validation.reps: the number of unmixing matrices to generate
-  ## cor.thres: the threshold for which two columns of unmixing matrices are considered to match
-  ## alg.typ, tol, fun, alpha, maxit, verbose: parameters used for the FastICA algorithm
+  ## validation.reps: the number of unmixing matrices to generate and compare with one another
+  ## cor.thres: the correlation threshold (in absolute value) above which two columns of unmixing matrices are considered to match
+  ## alg.typ: method for running FastICA, either "parallel" (components estimated at once) or "deflation" (components estimated sequentially)
+  ## return.estimates: whether to return the estimated number of components from each pair of unmixing matrices comparison
   
-  ### Output: a list containing the estimated number of components and the estimate's standard deviation
+  ### Output: a list containing the either the estimated number of latent components and the estimate's standard deviation,
+  ###         or a vector of all individual estimated from pairwise comparisons
 
   unmixing.matrices = get.unmixing.matrices(B, K = starting.K, n.matrices = validation.reps, alg.typ = alg.typ) ## use the default parameters for FastICA
   
@@ -117,40 +125,14 @@ get.nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
 }
 
 
-## Function for the novel extension of GUIDE with ICASSO...
-
-guide_icasso <- function(B, K, ica_runs = 20) {
-  
-  unmixing.matrices = get.unmixing.matrices(B, K = K, n.matrices = ica_runs, verbose = F) ## each component corresponds to a column in the unmixing matrix
-  
-  unmix.total = do.call(cbind, unmixing.matrices)
-  
-  cors.unmix = abs(cor(unmix.total))
-  
-  dist.unmix = 1 - cors.unmix ## distance measure between two components, defined as 1 minus their absolute Pearson correlation
-  
-  hc = hclust(as.dist(dist.unmix), method = "average")
-  
-  clusters = cutree(hc, k = K)
-  
-  optimal.unmixing.matrix = matrix(0, K, K)
-  
-  for (ii in 1:K) {
-    cluster_points = which(clusters == ii)  
-    sub_cors = cors.unmix[cluster_points, cluster_points]  
-    if (length(cluster_points) == 1) medoid_index = cluster_points
-    else medoid_index = cluster_points[which.max(rowSums(sub_cors))]  
-    optimal.unmixing.matrix[,ii] = unmix.total[,medoid_index]
-  }
-  
-  return(list(hc = hc,
-              clusters = clusters,
-              cors.unmix = cors.unmix,
-              optimal.unmixing.matrix = optimal.unmixing.matrix))
-}
+## The following two functions contain the implementation of the novel extension of GUIDE with ICASSO, 
+## where the unmixing matrix is estimated  by incorporating many ICA runs. Details can be found in the thesis pdf.
 
 
 get_optimal_unmixing_matrix <- function(unmix.total, clusters, cors.unmix) {
+  
+  ### See below for the description of inputs
+  ### Output: The final unmixing matrix (transposed), estimated with ICASSO.
   
   K = length(unique(clusters))
   
@@ -170,6 +152,24 @@ get_optimal_unmixing_matrix <- function(unmix.total, clusters, cors.unmix) {
 
 get_guide <- function(B, K=10, ica_runs = 1, alg.typ = "parallel", tol = 1e-04, fun = "logcosh",
                       alpha = 1.0, maxit = 200, verbose = T) {
+  
+  ### Inputs
+  ## B: the matrix with the summary statistics
+  ## K: the number of components
+  ## ica_runs: the number of ICA runs used in ICASSO
+  ## all other inputs are parameters for FastICA
+  
+  ### Output: a list consisting of:
+  ## W.xl: The variant-to-latent GUIDE weights
+  ## W.lt: The latent-to-trait GUIDE weights
+  ## A.T:  The final unmixing matrix (transposed), estimated with ICASSO.
+  ## hc: the hierarchical clustering object obtained from clustering all estimated components across ICA runs,
+  ##     based on their absolute Pearson correlations.
+  ## clusters: a vector of cluster assignments for each estimated component (length = K * ica_runs),
+  ##           where each cluster corresponds to one of the K independent components.
+  ## cors.unmix: the absolute correlation matrix of all components from all ICA runs,
+  ##             used to compute similarity between estimated components.
+  
   
   
   B = scale(B, center = TRUE, scale = FALSE)
@@ -220,10 +220,16 @@ get_guide <- function(B, K=10, ica_runs = 1, alg.typ = "parallel", tol = 1e-04, 
 } 
   
   
-
+## Function to estimate the Cluster Quality Index (CQI) for each component.
+## The CQI is defined as (within-cluster similarity) minus (between-cluster similarity).
+## Higher values indicate more stable and well-separated components.
 
 
 get_cqi_values <- function(cors.unmix, clusters) {
+  
+  ### See above for the inputs
+  
+  ### Output: a vector of CQI values
   
   cqi_values = c()
   K = length(unique(clusters))
@@ -243,21 +249,31 @@ get_cqi_values <- function(cors.unmix, clusters) {
 }
 
 
+## Function to compute the R index, a scalar value measuring overall clustering quality for different partitions,
+## where lower values suggest more distinct and compact clusters. See  Levine and Domany (2001) for further details.
 
-get_r_index <- function(cors.unmix, hc, L) {
+
+get_r_index <- function(cors.unmix, hc, K) {
+  
+  ### Inputs:
+  ## cors.unmix, hc: as defined above
+  ## K: the number of components
+  
+  ### Output: the R index
+  
   
   dist.unmix = 1 - cors.unmix
   
-  clusters = cutree(hc, L)
+  clusters = cutree(hc, K)
   
   I.R = 0
   
-  for (ii in 1:L) {
+  for (ii in 1:K) {
     
     in_cluster = which(clusters == ii)
     within_dif = sum(dist.unmix[in_cluster, in_cluster])/(length(in_cluster)^2)
     
-    out_indices = setdiff(1:L, ii)
+    out_indices = setdiff(1:K, ii)
     out_difs = c()
     
     for (m in out_indices) {
@@ -268,7 +284,7 @@ get_r_index <- function(cors.unmix, hc, L) {
     
     I.R = I.R + within_dif/min(out_difs)
   }
-  return(I.R/L)
+  return(I.R/K)
 }
 
 
