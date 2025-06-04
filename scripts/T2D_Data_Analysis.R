@@ -943,39 +943,3 @@ icasso_ica_total
 
 
 
-
-
-
-
-
-
-## 3) Barplots of top 5 variants and top 5 phenotypes for GUIDE and DeGAs
-
-
-
-# stacked_barplot(W.xl.guide^2, n = 10,
-#                 main = "Contributions of Top 10 Variants on GUIDE Clusters",
-#                 ylab = "Variant Contribution Scores",
-#                 xlab = "GUIDE_")
-# 
-# stacked_barplot(W.lt.guide^2, n = 5,
-#                 main = "Contributions of Top 5 Traits on GUIDE Clusters",
-#                 ylab = "Trait Contribution Scores",
-#                 xlab = "GUIDE_")
-# 
-# stacked_barplot(W.xl.degas^2, n = 10,
-#                 main = "Contributions of Top 10 Variants on DeGAs Clusters",
-#                 ylab = "Variant Contribution Scores",
-#                 xlab = "DeGAs_")
-# 
-# stacked_barplot(W.lt.degas^2, n = 5,
-#                 main = "Contributions of Top 10 Traits on DeGAs Clusters",
-#                 ylab = "Trait Contribution Scores",
-#                 xlab = "DeGAs_")
-
-
-
-
-
-
-

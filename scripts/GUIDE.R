@@ -274,22 +274,3 @@ get_r_index <- function(cors.unmix, hc, L) {
 
 
 
-
-##### to be removed
-
-# get_ica_clustering <- function(W, K, reps = 20) {
-# 
-# unmixing.matrices = get.unmixing.matrices(W, K = K, n.matrices = reps, verbose = F) ## each component corresponds to a column in the unmixing matrix
-# unmix.total = do.call(cbind, unmixing.matrices)
-# 
-# cors.unmix = abs(cor(unmix.total))
-# dist.unmix = 1 - cors.unmix
-# 
-# hc = hclust(as.dist(dist.unmix), method = "average") ## hierarchical clustering with average linkage
-# 
-# clusters = cutree(hc, k = K) ## cutting the tree at K components
-# 
-# return(list(hc = hc, clusters = clusters, cors.unmix = cors.unmix, unmix.total = unmix.total))
-# }
-# 
-
