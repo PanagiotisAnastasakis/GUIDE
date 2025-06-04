@@ -244,21 +244,52 @@ get_cqi_values <- function(cors.unmix, clusters) {
 
 
 
-##### to be removed
-
-get_ica_clustering <- function(W, K, reps = 20) {
-
-unmixing.matrices = get.unmixing.matrices(W, K = K, n.matrices = reps, verbose = F) ## each component corresponds to a column in the unmixing matrix
-unmix.total = do.call(cbind, unmixing.matrices)
-
-cors.unmix = abs(cor(unmix.total))
-dist.unmix = 1 - cors.unmix
-
-hc = hclust(as.dist(dist.unmix), method = "average") ## hierarchical clustering with average linkage
-
-clusters = cutree(hc, k = K) ## cutting the tree at K components
-
-return(list(hc = hc, clusters = clusters, cors.unmix = cors.unmix, unmix.total = unmix.total))
+get_r_index <- function(cors.unmix, hc, L) {
+  
+  dist.unmix = 1 - cors.unmix
+  
+  clusters = cutree(hc, L)
+  
+  I.R = 0
+  
+  for (ii in 1:L) {
+    
+    in_cluster = which(clusters == ii)
+    within_dif = sum(dist.unmix[in_cluster, in_cluster])/(length(in_cluster)^2)
+    
+    out_indices = setdiff(1:L, ii)
+    out_difs = c()
+    
+    for (m in out_indices) {
+      
+      out_cluster = which(clusters == m)
+      out_difs = c(out_difs, sum(dist.unmix[in_cluster, out_cluster])/(length(in_cluster)*length(out_cluster)))
+    }
+    
+    I.R = I.R + within_dif/min(out_difs)
+  }
+  return(I.R/L)
 }
 
+
+
+
+
+##### to be removed
+
+# get_ica_clustering <- function(W, K, reps = 20) {
+# 
+# unmixing.matrices = get.unmixing.matrices(W, K = K, n.matrices = reps, verbose = F) ## each component corresponds to a column in the unmixing matrix
+# unmix.total = do.call(cbind, unmixing.matrices)
+# 
+# cors.unmix = abs(cor(unmix.total))
+# dist.unmix = 1 - cors.unmix
+# 
+# hc = hclust(as.dist(dist.unmix), method = "average") ## hierarchical clustering with average linkage
+# 
+# clusters = cutree(hc, k = K) ## cutting the tree at K components
+# 
+# return(list(hc = hc, clusters = clusters, cors.unmix = cors.unmix, unmix.total = unmix.total))
+# }
+# 
 
