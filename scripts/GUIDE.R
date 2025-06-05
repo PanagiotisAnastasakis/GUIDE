@@ -7,7 +7,7 @@ library(fastICA) ## package for implementation of fastICA
 
 ## Function to get GUIDE unmixing matrices from multiple ICA runs
 
-get.unmixing.matrices <- function(B, K, n.matrices = 10,
+get_unmixing_matrices <- function(B, K, n.matrices = 10,
                                   alg.typ = "parallel", tol = 1e-04, fun = "logcosh",
                                   alpha = 1.0, maxit = 200, verbose = F) {
   
@@ -73,7 +73,7 @@ get.unmixing.matrices <- function(B, K, n.matrices = 10,
 ## and the median is reported as the final estimate of the number of latent components.
 
 
-get.nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
+get_nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
                          alg.typ = "parallel", return.estimates = F) {
   
   ### Inputs
@@ -87,7 +87,7 @@ get.nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
   ### Output: a list containing the either the estimated number of latent components and the estimate's standard deviation,
   ###         or a vector of all individual estimated from pairwise comparisons
 
-  unmixing.matrices = get.unmixing.matrices(B, K = starting.K, n.matrices = validation.reps, alg.typ = alg.typ) ## use the default parameters for FastICA
+  unmixing.matrices = get_unmixing_matrices(B, K = starting.K, n.matrices = validation.reps, alg.typ = alg.typ) ## use the default parameters for FastICA
   
   combs = combn(1:validation.reps, 2)
   
@@ -175,16 +175,16 @@ get_guide <- function(B, K=10, ica_runs = 1, alg.typ = "parallel", tol = 1e-04, 
   B = scale(B, center = TRUE, scale = FALSE)
   B = t(scale(t(B), center = TRUE, scale = FALSE))
   
-  tsvd.list = svd(B)
+  svd.list = svd(B)
   
-  U = tsvd.list$u[,1:K]
-  d = tsvd.list$d[1:K]
-  V = tsvd.list$v[,1:K]
+  U = svd.list$u[,1:K]
+  d = svd.list$d[1:K]
+  V = svd.list$v[,1:K]
   
   
   if (ica_runs == 1) {
     
-    A.T = get.unmixing.matrices(B, K = K, n.matrices = 1, verbose = F)[[1]]
+    A.T = get_unmixing_matrices(B, K = K, n.matrices = 1, verbose = F)[[1]]
     
     hc = NULL
     clusters = NULL
@@ -193,7 +193,7 @@ get_guide <- function(B, K=10, ica_runs = 1, alg.typ = "parallel", tol = 1e-04, 
   
   else {
     
-    unmixing.matrices = get.unmixing.matrices(B, K = K, n.matrices = ica_runs, verbose = F) ## each component corresponds to a column in the unmixing matrix
+    unmixing.matrices = get_unmixing_matrices(B, K = K, n.matrices = ica_runs, verbose = F) ## each component corresponds to a column in the unmixing matrix
     
     unmix.total = do.call(cbind, unmixing.matrices)
     

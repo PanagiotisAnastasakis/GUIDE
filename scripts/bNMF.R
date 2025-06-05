@@ -19,7 +19,7 @@ NN_transformation <- function(z_mat) {
 
 
 
-## bNMF code from: https://github.com/gwas-partitioning/bnmf-clustering
+## bNMF code from https://github.com/gwas-partitioning/bnmf-clustering
 
 
 BayesNMF.L2EU <- function(V0, n.iter=10000, a0=10, tol=1e-7, K=15, K0=15, phi=1.0) {

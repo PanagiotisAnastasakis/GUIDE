@@ -34,6 +34,8 @@ library(cowplot)
 ```
 
 
+Here, the capacity of CQI scores in identifying more significant components is evaluated.
+
 
 ```{r}
 
@@ -78,8 +80,6 @@ for (sampler in names(results_misspec_recovery_guide)) {
       n.captured.components[jj,] = sapply(1:k.est, function(k.est.ord) {
         length(intersect(matches, order(cqi.vals, decreasing = TRUE)[1:k.est.ord]))
       })
-      
-      
     }
       
     results_misspec_recovery_guide[[sampler]][[sparsity]] = n.captured.components

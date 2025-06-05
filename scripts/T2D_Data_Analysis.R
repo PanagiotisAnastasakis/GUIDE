@@ -1,15 +1,12 @@
 
-## This file contains the script for analyzing the data from the paper 
+## This file contains the script for analyzing T2D data from the paper 
 ## "Multiancestry polygenic mechanisms of type 2 diabetes", by K. Smith et al.
 
 
 library(ggplot2)
 library(cowplot)
 library(pheatmap)
-library(vegan)
-library(matrixcalc)
 library(moments)
-library(paran)
 library(tidyverse)
 library(gridExtra)
 library(grid)
@@ -19,17 +16,17 @@ library(ggbeeswarm)
 set.seed(6941125)
 
 
-K = 12 ## Number of clusters used in the bNMF analysis of this data
+K = 12 ## Number of clusters used in the bNMF analysis of this data. We use the same for both GUIDE and DeGAs
 
 def_par = par(no.readonly = TRUE)
 
 
 ## Running DeGAs
 
-tsvd_list = get_tsvd(scale(df), K = K)
+degas.list = get_tsvd(scale(df), K = K)
 
-W.xl.degas = tsvd_list$U
-W.lt.degas = tsvd_list$V
+W.xl.degas = degas.list$U
+W.lt.degas = degas.list$V
 
 W.xl.degas_signif = W.xl.degas
 W.xl.degas_signif[W.xl.degas_signif^2 < 1/nrow(df)] = 0
@@ -126,7 +123,7 @@ par(def_par)
 
 n_runs = 150
 
-d = get.nlatents(df, starting.K = K, validation.reps = n_runs, return.estimates = T)
+d = get_nlatents(df, starting.K = K, validation.reps = n_runs, return.estimates = T)
 
 sum(d == K)/(n_runs*(n_runs-1)/2)
 
@@ -148,7 +145,7 @@ single_ICA_comps = ggplot(data.frame(d), aes(x = d)) +
 
 
 
-### same for ICASSO
+### ICASSO
 
 unmixing.matrices = list()
 
@@ -259,9 +256,6 @@ total_names = c(gene_names, phenotype_names)
 total_weights_guide = rbind(W.xl.guide_signif, W.lt.guide_signif) 
 
 
-source("/Users/panos/Desktop/MSc Thesis/Code/helper.R")
-
-
 cluster_number = 12
 
 ## save at 13x13
@@ -269,7 +263,7 @@ cluster_circle_plot(total_weights_guide[,cluster_number],
                     total_names = total_names,
                     title = paste("GUIDE Cluster", cluster_number),
                     rotate = 20)
-## 6 at rotate 60
+## 6 rotate 60
 
 ## 1 -> cholesterol
 ## 2 -> Beta Cell 2
@@ -847,6 +841,4 @@ grid.draw(
     )
   )
 )
-
-
 

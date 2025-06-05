@@ -50,7 +50,7 @@ weights.true = rbind(W.xl, t(W.lt))
 W = W.xl %*% W.lt + matrix(rnorm(n*p, 0, 0.5), nrow = n)
 
 
-guide.list = get_guide(W, K = k, ica_runs = 1, verbose=F) ## no need for ICASSO in simple optimization settings
+guide.list = get_guide(W, K = k, ica_runs = 1, verbose=F) ## no need for ICASSO in simple optimization settings, so set ica_runs=1
 W.xl.guide = guide.list$W.xl
 W.lt.guide = guide.list$W.lt
 weights.guide = rbind(W.xl.guide, W.lt.guide)
@@ -93,16 +93,12 @@ plot_simulation(t(W.lt), W.lt.degas.matched, xlab = "DeGAs Trait Weights", ylab 
 ```
 
 
-## Showcasing how GUIDE's approach for estimating a number of components becomes incosistent 
+### Showcasing how GUIDE's approach for estimating a number of components can become incosistent with small genetic architectures
 
 
 ```{r}
 
 set.seed(22)
-
-
-### Plot 1
-
 
 
 n.1 = 200
@@ -129,7 +125,7 @@ for (ii in 1:n.reps) {
   
   W = W.xl %*% W.lt + matrix(rnorm(n.1*p.1, 0, 0.5), nrow = n.1)
   
-  K.est.1 = get.nlatents(W, starting.K = K.1, validation.reps = 30, alg.typ = "deflation")$K
+  K.est.1 = get_nlatents(W, starting.K = K.1, validation.reps = 30, alg.typ = "deflation")$K
   
   nlat.output.1 = c(nlat.output.1, K.est.1)
   
@@ -159,7 +155,7 @@ for (ii in 1:n.reps) {
   
   W = W.xl %*% W.lt + matrix(rnorm(n.2*p.2, 0, 0.5), nrow = n.2) 
   
-  K.est.2 = get.nlatents(W, starting.K = K.2, validation.reps = 30, alg.typ = "deflation")$K
+  K.est.2 = get_nlatents(W, starting.K = K.2, validation.reps = 30, alg.typ = "deflation")$K
   
   nlat.output.2 = c(nlat.output.2, K.est.2)
   
@@ -188,7 +184,7 @@ ggplot(data.frame(nlat.output.2), aes(x = nlat.output.2)) +
 
 
 
-## GUIDE is mostly correct with the bigger structure, but sometimes is wrong despite the clear present of 10 non-random components
+### GUIDE is mostly correct with the larger genetic architecture, but sometimes is wrong despite the clear present of 10 non-random components
 
 
 ```{r}
@@ -219,7 +215,7 @@ ggplot(data.frame(index = 1:length(d), d = d), aes(x = index, y = d)) +
 ```
 
 
-## Showing how GUIDE's estimation of the number of components breaks down with increasing levels of component dependence
+### GUIDE's estimation of the number of components also breaks down with increasing levels of component dependence
 
 
 ```{r}
@@ -246,7 +242,7 @@ for (jj in 1:n.reps) {
     
     W = W.xl %*% W.lt + matrix(rnorm(n*p, 0, 0.5), nrow = n)
     
-    nlat.output = get.nlatents(W, starting.K = K, validation.reps = 30, alg.typ = "deflation")$K
+    nlat.output = get_nlatents(W, starting.K = K, validation.reps = 30, alg.typ = "deflation")$K
     
     nlat.outputs[ii, jj] = nlat.output
   }

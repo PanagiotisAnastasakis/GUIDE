@@ -9,7 +9,7 @@ library(Homo.sapiens)
 library(dplyr)
 
 
-# Code is from bNMF for T2D pipeline file format_bNMF_results.Rmd, slightly adapted for the purposes of this work
+# Code is from https://github.com/gwas-partitioning/bnmf-clustering, slightly adapted for the purposes of this work.
 # snps is a vector of variants in the form "chr:pos" or "chr:pos:ref:alt"
 # Returns a data frame with variant name, gene name and ENTREZID. 
 # If a gene name was not found, defaults to variant name
@@ -121,9 +121,18 @@ query_locus_names <- function(snps){
 }
 
 
+## Function for making circle plots given a vector of weights and the variant/trait they correspond to.
 
 
 cluster_circle_plot <- function(cluster_weights, total_names, title, rotate = 0) {
+  
+  ### Inputs
+  ## cluster_weights: a vector of concatenated variant and trait weights for a given component (cluster)
+  ## total_names: the corresponding names of the variant and trait weights,
+  ## title: the plot's title
+  ## rotate: used to rotate the circle if needed
+  
+  ### Output: the circle plot
   
   cluster_data = data.frame(
     names = total_names,
@@ -194,8 +203,16 @@ cluster_circle_plot <- function(cluster_weights, total_names, title, rotate = 0)
 }
 
 
+### Function to compute the jaccard matrix between two weight matrices
+
 
 compute_jaccard_matrix <- function(A, B) {
+  
+  ### Inputs:
+  ## A,B: the two weight matrices, where the weights of each component are assumed to be in the columns
+  
+  ### Output: a matrix with jaccard indices between the components of A and B, where the rows correspond to the
+  ###         components of A and the columns correspond to the components of B
   
   k.1 = ncol(A)
   k.2 = ncol(B)
@@ -265,12 +282,7 @@ stacked_barplot <- function(contr.scores, n, main = NULL, ylab = NULL, xlab = NU
 
 
 
-
-
-
-
-#### Modified pheatmap to support rownames from left
-
+#### Modified pheatmap to support rownames from left 
 
 
 library(grid)

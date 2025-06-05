@@ -34,7 +34,7 @@ library(moments)
 ```
 
 
-
+Here, simulations are performed with polygenic additive genetic architectures, where the number of components is assumed to be known, comparing GUIDE with DeGAs under different levels of sparsity for the weights, sampled from either a Gaussian or a Laplace distribution.
 
 
 ```{r}
@@ -633,7 +633,7 @@ plot_grid(f.c2.laplace.xl, f.c2.laplace.lt, f.c2.laplace.kurt, nrow = 1, align =
 ```
 
 
-## Showing how the weights of variants with small allele frequencies are underestimated
+Here it is shown how the weights of variants with small allele frequencies are underestimated.
 
 
 
