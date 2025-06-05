@@ -11,9 +11,6 @@ This repository contains the analysis of methods for decomposing genetic associa
 The first two methods are extensively compared, with a particular focus a GUIDE. The implementation of GUIDE has been extended through the use of ICASSO framework. 
 
 
-Details on this extension can be found in the file `Thesis.pdf`. 
-
-
 ### Files
 
 All analyses in this repository, located in the `scripts` folder, were used in my MSc thesis, which can be found in the file `Thesis.pdf`.
@@ -24,8 +21,8 @@ All analyses in this repository, located in the `scripts` folder, were used in m
 * `Simulation_functions.R`: Contains functions related to the simulation of genetic architectures, used to evaluate GUIDE and compare it with DeGAs across diverse scenarios.
 * `Additional_helper_functions.R`: Here, additional functions used throughout are included.
 * `Example_usage.R`: This file has a simple example demonstrating how one can use this implementation of GUIDE and DeGAs.
-* `Block_simulation.Rmd`, `Polygenic_simulation_1`, `Polygenic_simulation_2`, `Polygenic_simulation_3`: The 4 R Markdown files contain all the simulation analyses, from generating the data, storing it and visualizing it.
-* `T2D_data_analysis`: The script of this file was used to analyze T2D data from the paper ['Multi-ancestry polygenic mechanisms of
-type 2 diabetes'](https://www.nature.com/articles/s41591-024-02865-3) by K. Smith et al. (2024).
+* `Block_simulation.Rmd`, `Polygenic_simulation_1`, `Polygenic_simulation_2`, `Polygenic_simulation_3`: These four R Markdown files contain all the simulation analyses, from generating the data, storing it and visualizing it.
+* `T2D_data_analysis`: The script of this file was used to analyze T2D data from the paper '[Multi-ancestry polygenic mechanisms of
+type 2 diabetes](https://www.nature.com/articles/s41591-024-02865-3)' by K. Smith et al. (2024).
 
 
