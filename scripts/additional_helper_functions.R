@@ -4,7 +4,7 @@
 #  install.packages("BiocManager")
 #BiocManager::install("Homo.sapiens")
 # BiocManager::install("GenomicRanges")
-
+ 
 library(Homo.sapiens)
 library(dplyr)
 
