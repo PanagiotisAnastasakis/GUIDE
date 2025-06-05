@@ -8,4 +8,4 @@ This repository contains methods for decomposing genetic associations between va
 
 3. [Bayesian Non-Negative Matrix Factorization (bNMF)](https://pubmed.ncbi.nlm.nih.gov/30240442/).
 
-The first two methods are extensively compared, with a particular focus a GUIDE. The implementation of GUIDE has been extended through the use of ICASSO framework. Details on this extension can be found in the file 'Thesis.pdf'.
+The first two methods are extensively compared, with a particular focus a GUIDE. The implementation of GUIDE has been extended through the use of ICASSO framework. Details on this extension can be found in the file `Thesis.pdf`. 
