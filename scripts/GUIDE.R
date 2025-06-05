@@ -1,5 +1,5 @@
 
-library(fastICA) ## package for implementation of fastICA
+library(fastICA) ## package for fastICA
 
 
 ## Functions for the decomposition of a GWAS summary statistics matrix using the method
@@ -70,7 +70,7 @@ get_unmixing_matrices <- function(B, K, n.matrices = 10,
 
 ## Using different initializations with the same input, a pre-specified number of unmixing matrices
 ## is generated. Then, all possible pairs are compared in terms of how many matching columns they have
-## and the median is reported as the final estimate of the number of latent components.
+## and the median is reported as the final estimate for the number of latent components.
 
 
 get_nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
@@ -84,8 +84,8 @@ get_nlatents <- function(B, starting.K, validation.reps = 10, cor.thres = 0.95,
   ## alg.typ: method for running FastICA, either "parallel" (components estimated at once) or "deflation" (components estimated sequentially)
   ## return.estimates: whether to return the estimated number of components from each pair of unmixing matrices comparison
   
-  ### Output: a list containing the either the estimated number of latent components and the estimate's standard deviation,
-  ###         or a vector of all individual estimated from pairwise comparisons
+  ### Output: a list containing either the estimated number of latent components and the estimate's standard deviation,
+  ###         or a vector of all individual estimates from pairwise comparisons
 
   unmixing.matrices = get_unmixing_matrices(B, K = starting.K, n.matrices = validation.reps, alg.typ = alg.typ) ## use the default parameters for FastICA
   
@@ -221,8 +221,8 @@ get_guide <- function(B, K=10, ica_runs = 1, alg.typ = "parallel", tol = 1e-04, 
   
   
 ## Function to estimate the Cluster Quality Index (CQI) for each component.
-## The CQI is defined as (within-cluster similarity) minus (between-cluster similarity).
 ## Higher values indicate more stable and well-separated components.
+## For further details see Himberg and Hyvärinen (2003).
 
 
 get_cqi_values <- function(cors.unmix, clusters) {

@@ -41,13 +41,19 @@ n = 3000
 p = 200
 k = 20
 
-W.xl = generate_latent_effect_matrix(n = n, n.latents = k, lower=-2, upper=2, noise.sd = 0.3, dependence.prob = 0.1)
-W.lt = t(generate_latent_effect_matrix(n = p, n.latents = k, lower=-2, upper=2, noise.sd = 0.3, dependence.prob = 0.1))
+noise.sd.1 = 0.3
+noise.sd.2 = 0.5
 
-weights.true = rbind(W.xl, t(W.lt))
+block.list = block_sim(n, p, k, lower = -2, upper = 2, dependence.prob = 0.1,
+                       noise.sd.1 = noise.sd.1, noise.sd.2 = noise.sd.2)
 
+W = block.list$W
 
-W = W.xl %*% W.lt + matrix(rnorm(n*p, 0, 0.5), nrow = n)
+W.xl = block.list$W.xl
+W.lt = block.list$W.lt
+
+weights.true = rbind(W.xl, W.lt)
+
 
 
 guide.list = get_guide(W, K = k, ica_runs = 1, verbose=F) ## no need for ICASSO in simple optimization settings, so set ica_runs=1
@@ -80,14 +86,14 @@ W.lt.degas.matched = weights.degas.matched$weights.matched.lt
 
 ## save at 12.5, 9
 plot_simulation(W.xl, W.xl.guide.matched, xlab = "GUIDE Variant Weights", ylab = "Simulated Variant Weights", main = "GUIDE & Simulated Variant Weights")
-plot_simulation(t(W.lt), W.lt.guide.matched, xlab = "GUIDE Trait Weights", ylab = "Simulated Trait Weights", main = "GUIDE & Simulated Trait Weights")
+plot_simulation(W.lt, W.lt.guide.matched, xlab = "GUIDE Trait Weights", ylab = "Simulated Trait Weights", main = "GUIDE & Simulated Trait Weights")
 
 
 #### TSVD
 
 ## save at 12.5, 9
 plot_simulation(W.xl, W.xl.degas.matched, xlab = "DeGAs Variant Weights", ylab = "Simulated Variant Weights", main = "DeGAs & Simulated Variant Weights")
-plot_simulation(t(W.lt), W.lt.degas.matched, xlab = "DeGAs Trait Weights", ylab = "Simulated Trait Weights", main = "DeGAs & Simulated Trait Weights")
+plot_simulation(W.lt, W.lt.degas.matched, xlab = "DeGAs Trait Weights", ylab = "Simulated Trait Weights", main = "DeGAs & Simulated Trait Weights")
 
 
 ```
@@ -120,10 +126,10 @@ n.reps = 100
 
 for (ii in 1:n.reps) {
   
-  W.xl = generate_latent_effect_matrix(n = n.1, n.latents = n.blocks.1, lower = -2, upper = 2, dependence.prob = 0, noise.sd = 0.1)
-  W.lt = t(generate_latent_effect_matrix(n = p.1, n.latents = n.blocks.1, lower = -2, upper = 2, dependence.prob = 0, noise.sd = 0.1))
-  
-  W = W.xl %*% W.lt + matrix(rnorm(n.1*p.1, 0, 0.5), nrow = n.1)
+  block.list = block_sim(n.1, p.1, n.blocks.1, lower = -2, upper = 2, dependence.prob = 0,
+                         noise.sd.1 = 0.1, noise.sd.2 = 0.5)
+
+  W = block.list$W
   
   K.est.1 = get_nlatents(W, starting.K = K.1, validation.reps = 30, alg.typ = "deflation")$K
   
@@ -149,11 +155,10 @@ ggplot(data.frame(nlat.output.1), aes(x = nlat.output.1)) +
 
 for (ii in 1:n.reps) {
   
-  
-  W.xl = generate_latent_effect_matrix(n = n.2, n.latents = n.blocks.2, lower = -2, upper = 2, dependence.prob = 0, noise.sd = 0.1)
-  W.lt = t(generate_latent_effect_matrix(n = p.2, n.latents = n.blocks.2, lower = -2, upper = 2, dependence.prob = 0, noise.sd = 0.1))
-  
-  W = W.xl %*% W.lt + matrix(rnorm(n.2*p.2, 0, 0.5), nrow = n.2) 
+  block.list = block_sim(n.2, p.2, n.blocks.2, lower = -2, upper = 2, dependence.prob = 0,
+                         noise.sd.1 = 0.1, noise.sd.2 = 0.5)
+
+  W = block.list$W
   
   K.est.2 = get_nlatents(W, starting.K = K.2, validation.reps = 30, alg.typ = "deflation")$K
   
@@ -190,10 +195,10 @@ ggplot(data.frame(nlat.output.2), aes(x = nlat.output.2)) +
 ```{r}
 
 
-W.xl = generate_latent_effect_matrix(n = n.2, n.latents = n.blocks.2, lower = -2, upper = 2, dependence.prob = 0, noise.sd = 0.1)
-W.lt = t(generate_latent_effect_matrix(n = p.2, n.latents = n.blocks.2, lower = -2, upper = 2, dependence.prob = 0, noise.sd = 0.1))
+block.list = block_sim(n.2, p.2, n.blocks.2, lower = -2, upper = 2, dependence.prob = 0,
+                         noise.sd.1 = 0.1, noise.sd.2 = 0.5)
 
-W = W.xl %*% W.lt + matrix(rnorm(n.2*p.2, 0, 0.5), nrow = n.2) 
+W = block.list$W
 
 
 d = get_tsvd(scale(W), K = p.2)$d
@@ -237,10 +242,11 @@ for (jj in 1:n.reps) {
   
   for (ii in 1:length(dependence_probs)){
     
-    W.xl = generate_latent_effect_matrix(n = n, n.latents = n.blocks, lower = -2, upper = 2, dependence.prob = dependence_probs[ii], noise.sd = 0.1)
-    W.lt = t(generate_latent_effect_matrix(n = p, n.latents = n.blocks, lower = -2, upper = 2, dependence.prob = dependence_probs[ii], noise.sd = 0.1))
-    
-    W = W.xl %*% W.lt + matrix(rnorm(n*p, 0, 0.5), nrow = n)
+    block.list = block_sim(n, p, n.blocks, lower = -2, upper = 2,
+                           dependence.prob = dependence_probs[ii],
+                           noise.sd.1 = 0.1, noise.sd.2 = 0.5)
+
+    W = block.list$W
     
     nlat.output = get_nlatents(W, starting.K = K, validation.reps = 30, alg.typ = "deflation")$K
     
