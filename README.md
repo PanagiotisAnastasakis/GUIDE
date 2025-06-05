@@ -8,7 +8,7 @@ This repository contains the analysis of methods for decomposing genetic associa
 
 3. [Bayesian Non-Negative Matrix Factorization (bNMF)](https://pubmed.ncbi.nlm.nih.gov/30240442/)
 
-The first two methods are extensively compared, with a particular focus a GUIDE. The implementation of GUIDE has been extended through the use of ICASSO framework. 
+The first two methods are extensively compared, with a particular focus a GUIDE. The implementation of GUIDE has been extended through the use of [ICASSO](https://ieeexplore.ieee.org/document/1318025) framework. 
 
 
 ### Files
