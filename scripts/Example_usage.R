@@ -22,10 +22,10 @@ weights.true = rbind(W.xl, W.lt)
 ## and 'get_degas' respectively.
 
 
-## To run GUIDE, the function 'get_guide' incorporates the 
+## For GUIDE, the function 'get_guide' incorporates the 
 ## proposed ICASSO extension, where multiple ICA runs are considered 
 ## to get the final estimate. To use ICASSO with a specified number of runs
-## (e.g. 50 below), one can set the 'ica_runs' argument accordingly. If it is set to 1,
+## (e.g. 50 below), one must set the 'ica_runs' argument accordingly. If it is set to 1,
 ## then the standard GUIDE method is used, where ICA is run once.
 ## Note that all data preprocessing for GUIDE (mean-centering and whitening) is performed automatically.
 
@@ -41,9 +41,9 @@ W.lt.guide = guide.dec$W.lt ## the latent-to-trait weights (components are in th
 weights.guide = rbind(W.xl.guide, W.lt.guide)
 
 
-## Using the function 'get_matched_weights' (assuming that true weights exist), one
-## can change the ordering of the simulated weights to match the true ones, correcting
-## also for possible sign changes.
+## Using the function 'get_matched_weights' (assuming that the true weights exist and are known),
+## one can change the ordering of the simulated weights to match the true ones, also
+## correcting for possible sign changes.
 
 weights.guide.matched = get_matched_weights(weights.true = weights.true,
                                             weights.estimated = weights.guide,
@@ -58,8 +58,6 @@ W.lt.guide.matched = weights.guide.matched$weights.matched.lt
 
 plot_simulation(W.xl, W.xl.guide.matched, xlab = "GUIDE Variant Weights", ylab = "Simulated Variant Weights", main = "GUIDE & Simulated Variant Weights")
 plot_simulation(W.lt, W.lt.guide.matched, xlab = "GUIDE Trait Weights", ylab = "Simulated Trait Weights", main = "GUIDE & Simulated Trait Weights")
-
-
 
 
 ## Using the output of 'get_guide', we can also compute the Cluster Quality Index (CQI)
@@ -90,7 +88,7 @@ plot(guide.dec$hc,
 ## with that of other methods, such as DeGAs.
 
 ## To run DeGAs, which applies SVD on a given summary statistics matrix, we can 
-## use the function 'get_tsvd':
+## use the function 'get_tsvd'.
 
 
 degas.list = get_tsvd(B = scale(W), K = K) ## the arguments are as above
@@ -103,21 +101,23 @@ W.lt.degas = degas.list$V ## the latent-to-trait weights
 W.lt.degas = degas.list$d
 
 
-## Unlike GUIDE, DeGAs supports methods for choosing a number of components,
-## using the above average eigenvalue criterion, or by requiring a specific percentage
-## of variance to be explained by the components:
+## Unlike GUIDE, DeGAs supports methods for choosing a number of components using
+## popular statistical approaches related to SVD. In this implementation, two such
+## approaches are supported: the above average eigenvalue criterion and a specific percentage
+## of variance to be explained by the components.
 
-## To use the above average eigenvalue criterion, we must set K=0 and set the argument
-## 'method' to 'average_eig'
+## To use the above average eigenvalue criterion, we must have K=0 and set the argument
+## 'method' to 'average_eig':
 
 degas.list.average_eig = get_tsvd(B = scale(W), K = 0, method = "average_eig")
 
 ## To choose components according to a specific percentage of variance explained,
 ## again K must be set to 0 and now the argument 'method' is set to 'var_explained',
-## while we must specify the percentage 'p' using a value from 0 to 1.
+## while we must also specify the percentage 'p' using a value from 0 to 1.
 
 degas.list.var_explained = get_tsvd(B = scale(W), K = 0, method = "var_explained", p = 0.8)
 
 
-## The output is the same as before, with the number of components estimated as described.
+## The output is the same as before, the only difference being the statistical estimation of 
+## the number of components, instead of the use of a fixed value.
 
