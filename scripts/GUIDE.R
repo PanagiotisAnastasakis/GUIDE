@@ -69,7 +69,7 @@ get_unmixing_matrices <- function(B, K, n.matrices = 10,
 ## where GUIDE was introduced.
 
 ## Using different initializations with the same input, a pre-specified number of unmixing matrices
-## is generated. Then, all possible pairs are compared to in terms of how many matching columns they have
+## is generated. Then, all possible pairs are compared in terms of how many matching columns they have
 ## and the median is reported as the final estimate of the number of latent components.
 
 
@@ -154,7 +154,7 @@ get_guide <- function(B, K=10, ica_runs = 1, alg.typ = "parallel", tol = 1e-04, 
                       alpha = 1.0, maxit = 200, verbose = T) {
   
   ### Inputs
-  ## B: the matrix with the summary statistics
+  ## B: the matrix with the GWAS summary statistics
   ## K: the number of components
   ## ica_runs: the number of ICA runs used in ICASSO
   ## all other inputs are parameters for FastICA
@@ -250,7 +250,7 @@ get_cqi_values <- function(cors.unmix, clusters) {
 
 
 ## Function to compute the R index, a scalar value measuring overall clustering quality for different partitions,
-## where lower values suggest more distinct and compact clusters. See  Levine and Domany (2001) for further details.
+## where lower values suggest more distinct and compact clusters. See Levine and Domany (2001) for further details.
 
 
 get_r_index <- function(cors.unmix, hc, K) {
