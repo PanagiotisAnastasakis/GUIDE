@@ -22,7 +22,7 @@ All analyses in this repository, located in the `scripts` folder, were used in m
 * `Additional_helper_functions.R`: Contains additional functions used throughout this work.
 * `Example_usage.R`: This file has a simple example demonstrating how one can use this implementation of GUIDE and DeGAs.
 * `Block_simulation.Rmd`, `Polygenic_simulation_1`, `Polygenic_simulation_2`, `Polygenic_simulation_3`: These R Markdown files contain the full simulation pipeline, including data generation, storage, and visualization of results.
-* `T2D_data_analysis`: This script contains the analysis of type 2 diabetes (T2D) data with GUIDE and DeGAs, originating from the study '[Multi-ancestry polygenic mechanisms of
+* `T2D_data_analysis`: This script contains the analysis of type 2 diabetes (T2D) data from the study '[Multi-ancestry polygenic mechanisms of
 type 2 diabetes](https://www.nature.com/articles/s41591-024-02865-3)' by K. Smith et al. (2024).
 
 
