@@ -260,6 +260,7 @@ cluster_number = 12
 
 ## save at 13x13
 cluster_circle_plot(total_weights_guide[,cluster_number],
+                    nvariants = nrow(df),
                     total_names = total_names,
                     title = paste("GUIDE Cluster", cluster_number),
                     rotate = 20)
@@ -287,6 +288,7 @@ cluster_number = 12
 
 ## save at 13x13
 cluster_circle_plot(total_weights_guide[,1],
+                    nvariants = nrow(df),
                     total_names = total_names,
                     title = paste("GUIDE Cluster", 1),
                     rotate = 20)

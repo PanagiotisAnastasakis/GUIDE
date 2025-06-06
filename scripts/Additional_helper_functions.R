@@ -124,10 +124,12 @@ query_locus_names <- function(snps){
 ## Function for making circle plots given a vector of weights and the variant/trait they correspond to.
 
 
-cluster_circle_plot <- function(cluster_weights, total_names, title, rotate = 0) {
+cluster_circle_plot <- function(cluster_weights, nvariants, total_names, title, rotate = 0) {
   
   ### Inputs
-  ## cluster_weights: a vector of concatenated variant and trait weights for a given component (cluster)
+  ## cluster_weights: a vector of concatenated variant and trait weights for a given component (cluster).
+  ##                  The variant are assumed to be first, followed by the trait weights.
+  ## nvariants: the number of variants in the data
   ## total_names: the corresponding names of the variant and trait weights,
   ## title: the plot's title
   ## rotate: used to rotate the circle if needed
@@ -136,7 +138,7 @@ cluster_circle_plot <- function(cluster_weights, total_names, title, rotate = 0)
   
   cluster_data = data.frame(
     names = total_names,
-    group = c(ifelse(cluster_weights[1:650] > 0, "Vpos", "Vneg"), ifelse(cluster_weights[651:760] > 0, "Tpos", "Tneg")),
+    group = c(ifelse(cluster_weights[1:nvariants] > 0, "Vpos", "Vneg"), ifelse(cluster_weights[(nvariants+1):length(cluster_weights)] > 0, "Tpos", "Tneg")),
     weights = cluster_weights*35
   )
   
