@@ -18,11 +18,11 @@ All analyses in this repository, located in the `scripts` folder, were used in m
 * `GUIDE.R`: Contains functions for running GUIDE, extended with ICASSO.
 * `DeGAs.R`: Contains the function `get_tsvd`, which is used to run DeGAs.
 * `bNMF.R`: Contains functions for running bNMF, originating from [this](https://github.com/gwas-partitioning/bnmf-clustering) repository. The implementation of bNMF is not part of this work, but may be included in future analyses.
-* `Simulation_functions.R`: Contains functions related to the simulation of genetic architectures, used to evaluate GUIDE and compare it with DeGAs across diverse scenarios.
+* `Simulation_functions.R`: Contains functions related to the simulation of genetic architectures, used to evaluate GUIDE and compare it with DeGAs.
 * `Additional_helper_functions.R`: Contains additional functions used throughout this work.
 * `Example_usage.R`: This file has a simple example demonstrating how one can use this implementation of GUIDE and DeGAs.
-* `Block_simulation.Rmd`, `Polygenic_simulation_1`, `Polygenic_simulation_2`, `Polygenic_simulation_3`: These R Markdown files contain all the simulation analyses, from generating the data, to storing it and finally visualizing it.
-* `T2D_data_analysis`: The script of this file was used to analyze T2D data from the paper '[Multi-ancestry polygenic mechanisms of
+* `Block_simulation.Rmd`, `Polygenic_simulation_1`, `Polygenic_simulation_2`, `Polygenic_simulation_3`: These R Markdown files contain the full simulation pipeline, including data generation, storage, and visualization of results.
+* `T2D_data_analysis`: This script contains the analysis of type 2 diabetes (T2D) data with GUIDE and DeGAs, originating from the study '[Multi-ancestry polygenic mechanisms of
 type 2 diabetes](https://www.nature.com/articles/s41591-024-02865-3)' by K. Smith et al. (2024).
 
 
