@@ -160,7 +160,7 @@ cluster_circle_plot <- function(cluster_weights, nvariants, total_names, title, 
     rot = 0.2
     p.rot = 5.27
   }
-  if (length(unique(cluster_data$group)) < 4 & nrow(cluster_data) == 30) {
+  if (length(unique(cluster_data$group)) < 4 & nrow(cluster_data) >= 30) {
     rot = 0.2
     p.rot = 13.6
   }
