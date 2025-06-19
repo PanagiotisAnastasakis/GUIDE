@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 migraine_data_analysis.R
-bnmf_guide_analysis.R
+bnmf_analysis.R
+bnmf_results.rds

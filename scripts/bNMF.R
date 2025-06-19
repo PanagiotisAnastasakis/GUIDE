@@ -83,10 +83,10 @@ BayesNMF.L2EU <- function(V0, n.iter=10000, a0=10, tol=1e-7, K=15, K0=15, phi=1.
     n.lambda[[iter]] <- lambda
     n.error[[iter]] <- sum((V - V.ap)^2)
     
-    if (iter %% 100 == 0) {
-      cat(iter, n.evid[[iter]], n.like[[iter]], n.error[[iter]], del, 
-          sum(colSums(W) != 0), sum(lambda >= lambda.cut), '\n')
-    }
+    # if (iter %% 100 == 0) {
+    #   cat(iter, n.evid[[iter]], n.like[[iter]], n.error[[iter]], del, 
+    #       sum(colSums(W) != 0), sum(lambda >= lambda.cut), '\n')
+    # }
     iter <- iter + 1
   }
   return(list(
@@ -109,7 +109,7 @@ run_bNMF <- function(z_mat, n_reps=10, random_seed=1, K=20, K0=10, tolerance=1e-
   set.seed(random_seed)
   
   bnmf_reps <- lapply(1:n_reps, function(r) {
-    print(paste("ITERATION",r))
+    #print(paste("ITERATION",r))
     res <- BayesNMF.L2EU(V0 = z_mat, a0 = log(sum(dim(z_mat))), K=K, K0=K0, tol=tolerance)
     names(res) <- c("W", "H", "n.like", "n.evid", "n.lambda", "n.error")
     res
