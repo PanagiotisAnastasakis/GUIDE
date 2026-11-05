@@ -201,6 +201,8 @@ DeGAs-GUIDE/
 │   ├── Simulation_functions.R
 │   ├── T2D_Data_Analysis.R
 │   └── bNMF.R
+├── figures/
+│   ├── latent_network.png
 ├── .DS_Store
 ├── .gitignore
 ├── GUIDE.Rproj
