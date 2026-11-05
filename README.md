@@ -85,7 +85,7 @@ The resulting components can be interpreted through their variant and trait weig
 
 Figure 1 illustrates a hypothetical genetic architecture deconvoluted by DeGAs or GUIDE, comprising nine genetic variants, nine phenotypic traits and four underlying latent components.
 
-[Latent_network.pdf](https://github.com/user-attachments/files/34419821/Latent_network.pdf)
+![Hypothetical genetic architecture](figures/Latent Network.png)
 *Figure 1: Illustration of the latent network connecting genetic variants and phenotypic traits through underlying components.*
 
 
