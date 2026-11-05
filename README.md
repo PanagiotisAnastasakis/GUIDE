@@ -4,7 +4,7 @@
 **Author:** Panagiotis Anastasakis  
 **Supervisor:** Professor Matti Pirinen
 
-*This is a summary of research that was conduxted at the Institute for Molecular Medicine Finland (FIMM), leading to a M.Sc. Thesis. For methodological details, simulation specifications, figures and complete results, please refer to the accompanying Thesis: **Decomposing Genome–Phenome Associations Using Independent Component Analysis** (University of Helsinki, 2025).*
+*This is a summary of research that was conducted at the Institute for Molecular Medicine Finland (FIMM), leading to a M.Sc. Thesis. For methodological details, simulation specifications, figures and complete results, please refer to the accompanying Thesis: **Decomposing Genome–Phenome Associations Using Independent Component Analysis** (University of Helsinki, 2025).*
 
 ## 1. Project Overview
 
