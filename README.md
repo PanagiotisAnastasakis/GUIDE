@@ -63,8 +63,9 @@ GUIDE builds on the SVD representation by using Independent Component Analysis (
 ICA is a form of blind source separation: the goal is to recover hidden source signals from observations that are mixtures of those sources, without knowing either the original signals or the mixing process in advance. A familiar illustration is the cocktail-party problem. Imagine several people speaking at the same time while multiple microphones record the room. Each microphone captures a different mixture of all the speakers. If the speakers' signals are statistically independent, ICA attempts to recover the individual voices from the recordings.
 
 The general linear mixing model is:
+
 $$
-x = As,
+x = As
 $$
 
 where:
@@ -83,10 +84,16 @@ In GUIDE, the same idea is applied to genetic association patterns rather than a
 
 The resulting components can be interpreted through their variant and trait weights, where larger absolute weights indicate stronger contributions to a component. Since ICA components are identifiable only up to sign, scale and permutation, their ordering and signs require care when comparing results.
 
-Figure 1 illustrates a hypothetical genetic architecture deconvoluted by DeGAs or GUIDE, comprising nine genetic variants, nine phenotypic traits and four underlying latent components.
+Figure 1 presents a hypothetical genetic architecture deconvoluted by DeGAs or GUIDE, comprising nine genetic variants, nine phenotypic traits and four underlying latent components.
 
-![Hypothetical genetic architecture](figures/Latent Network.png)
-*Figure 1: Illustration of the latent network connecting genetic variants and phenotypic traits through underlying components.*
+<p align="center">
+  <img src="figures/latent_network.png" width="400" alt="Hypothetical genetic architecture">
+</p>
+
+<p align="center">
+  <em>Figure 1: Illustration of the latent network connecting genetic variants and phenotypic traits through underlying components.</em>
+</p>
+
 
 
 ### Improving robustness with ICASSO
@@ -108,11 +115,11 @@ The CQI reflects how compact a cluster is relative to its separation from other 
 
 Two simulation frameworks are used to compare GUIDE and DeGAs under controlled conditions.
 
-** A. Block-structured architectures**
+**A. Block-structured architectures**
 
 The first framework generates matrices with block-like patterns. Each block represents a latent component linking subsets of variants and traits. Dependencies between components are introduced through a parameter controlling the probability of additional non-zero weights outside the main blocks, which would imply that a variant or trait is loaded in multiple components. Noise is added to the component weights and to the resulting summary-statistics matrix. This framework makes it possible to examine how the methods behave as the underlying components become increasingly dependent.
 
-** B. Polygenic additive architectures**
+**B. Polygenic additive architectures**
 
 The second framework simulates genetic effects using a polygenic additive model, where multiple variants contribute to a given phenotype. Variant and trait weights are combined to generate the true effect-size matrix, consisting of z-scores. The weights are generated under two alternative distributional assumptions: a Gaussian distribution and a Laplace distribution. Different levels of sparsity are also considered for the summary statistics matrix, ranging from no sparsity to low and high sparsity, effectively introducing increasing complicated variant-trait networks. Sampling variability is introduced through standard errors and the resulting matrix is used as input to the decomposition methods.
 
